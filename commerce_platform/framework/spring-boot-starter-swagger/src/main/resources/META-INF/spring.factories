@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+io.clab.mpf.shop.framework.swagger.configuration.SwaggerConfiguration
