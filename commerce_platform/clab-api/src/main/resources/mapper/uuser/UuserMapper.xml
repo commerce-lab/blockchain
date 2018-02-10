@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.clab.mpf.shop.business.repository.uuser.UuserMapper">
+	<resultMap id="BaseResultMap" type="io.clab.mpf.shop.business.entity.uuser.Uuser">
+		<id column="uuser_id" property="uuserId" jdbcType="INTEGER" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="phone" property="phone" jdbcType="INTEGER" />
+		<result column="sex" property="sex" jdbcType="INTEGER" />
+		<result column="age" property="age" jdbcType="INTEGER" />
+		<result column="birthday" property="birthday" jdbcType="DATE" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="tags" property="tags" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="ShopConditiontCountResultMap" type="io.clab.mpf.shop.business.entity.uuser.ShopConditiontCount">
+		<result column="userCount" property="userCount" jdbcType="INTEGER" />
+		<result column="tagCount" property="tagCount" jdbcType="INTEGER" />
+		<result column="merchantsCount" property="merchantsCount" jdbcType="INTEGER" />
+		<result column="categoryCount" property="categoryCount" jdbcType="INTEGER" />
+	</resultMap>
+	
+	<resultMap id="ShopNewDataResultMap" type="io.clab.mpf.shop.business.entity.uuser.ShopNewData">
+		<result column="tags" property="tags" jdbcType="VARCHAR" />
+		<result column="ategorys" property="ategorys" jdbcType="VARCHAR" />
+		<result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="userCount" property="userCount" jdbcType="INTEGER" />
+	</resultMap>	
+
+	<select id="selectByPhone" resultMap="BaseResultMap" parameterType="java.lang.Long">
+		select
+		*
+		from t_upload_user a
+		where
+		a.phone = #{phone,jdbcType=INTEGER}
+	</select>
+	
+	<select id="selectAllCount" resultType="java.lang.Integer">
+		select count(1) as num from t_upload_user
+	</select>
+	
+	<sql id="Base_shop_condition_sql">
+		select * from t_upload_user where 1=1 
+			and uuser_id in (
+				select uuser_id from t_di_uuser 
+				where di_source = 1
+				<if test=" categoryId != null ">
+				and merchants_id in (select merchants_id from t_merchants_category where category_id in ( select category_id from t_category where FIND_IN_SET(category_id, category_child_lst(#{categoryId,jdbcType=INTEGER})) ))
+				</if>
+				<if test=" tagIdList != null">
+				and merchants_id in (select merchants_id from t_di_tag where tag_id in 
+				<foreach collection="tagIdList" index="index" item="item" open="(" separator="," close=")">  
+			        #{item}  
+			    </foreach> 
+				)
+				</if>
+			)
+			<if test=" startCreateTime != null">
+				<![CDATA[and create_time >= #{startCreateTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test=" endCreateTime != null">
+				<![CDATA[and create_time <= #{endCreateTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test=" startBirthday != null">
+				<![CDATA[and birthday >= #{startBirthday,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test=" endBirthday != null">
+				<![CDATA[and birthday <= #{endBirthday,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test=" sex != null">
+			and sex = #{sex,jdbcType=INTEGER}
+			</if>
+			<if test=" merchantsId != null">
+			and uuser_id not in (select uuser_id from t_di_uuser where merchants_id = #{merchantsId,jdbcType=INTEGER})
+			</if>
+	</sql>
+	
+	<select id="selectConditionCount" resultMap="ShopConditiontCountResultMap">
+	select COUNT(DISTINCT a.uuser_id) as userCount,
+		COUNT(DISTINCT b.tag_id) as tagCount,
+		COUNT(DISTINCT b.merchants_id) as merchantsCount,
+		COUNT(DISTINCT c.category_id) as categoryCount 
+	from 
+		(
+			<include refid="Base_shop_condition_sql" />
+		) a 
+	LEFT JOIN t_di_tag b on a.uuser_id = b.uuser_id 
+	LEFT JOIN t_merchants_category c on b.merchants_id = c.merchants_id
+	</select>
+	
+	<select id="selectConditionTwo" resultMap="BaseResultMap">
+	select temp.phone,temp.name,temp.age,temp.sex,GROUP_CONCAT(temp.tag_name) 
+	from (
+		select a.*,c.tag_name from 
+		(<include refid="Base_shop_condition_sql" />) a 
+		LEFT JOIN t_di_tag b on a.uuser_id = b.uuser_id 
+		LEFT JOIN t_tag c on b.tag_id = c.tag_id) temp 
+		group by temp.uuser_id
+	</select>
+	
+	<select id="selectShopNewData" resultMap="ShopNewDataResultMap">
+	select a.di_id,a.create_time,
+	GROUP_CONCAT(c.category_name) as ategorys,
+	GROUP_CONCAT(g.tag_name) as tags,
+	COUNT(DISTINCT a.uuser_id) as userCount
+	from t_data_item a 
+		LEFT JOIN t_merchants_category b on a.merchants_id = b.merchants_id 
+		LEFT JOIN t_category c on b.category_id = c.category_id
+		LEFT JOIN t_di_uuser d on a.di_id = d.di_id
+		LEFT JOIN t_upload_user e on d.uuser_id = e.uuser_id
+		LEFT JOIN t_di_tag f on e.uuser_id = f.uuser_id
+		LEFT JOIN t_tag g on g.tag_id = f.tag_id  
+		order by a.create_time desc
+	</select>
+	
+	<select id="selectUserAssetsList" resultMap="BaseResultMap" parameterType = "io.clab.mpf.shop.business.entity.uuser.UserAssetsParameter">
+	select 
+		c.name,
+		c.phone,
+		c.sex,
+		c.age,
+		c.birthday,
+		b.di_source,
+		MAX(a.create_time) as create_time,
+		MIN(a.create_time) as update_time,
+		GROUP_CONCAT(DISTINCT e.tag_name) as tags
+	from t_data_item a
+		LEFT JOIN t_di_uuser b on a.di_id = b.di_id
+	  LEFT JOIN t_upload_user c on b.uuser_id = c.uuser_id
+		LEFT JOIN t_di_tag d on d.uuser_id = c.uuser_id
+		LEFT JOIN t_tag e on e.tag_id = d.tag_id
+	where 1=1
+	<if test=" diId != null  and diId > 0">
+		and a.di_id = #{diId,jdbcType=INTEGER}
+	</if>
+	<if test=" startCreateTime != null ">
+		<![CDATA[and a.create_time >= #{startCreateTime,jdbcType=TIMESTAMP}]]>
+	</if>
+	<if test=" endCreateTime != null ">
+		<![CDATA[ and a.create_time <= #{endCreateTime,jdbcType=TIMESTAMP} ]]>
+	</if>
+	<if test=" diSource != null  and diSource > 0">
+		and b.di_source = #{diSource,jdbcType=INTEGER}
+	</if>
+	<if test=" sex != null  ">
+		and c.sex = #{sex,jdbcType=INTEGER}
+	</if>
+	<if test=" startBirthdayTime != null  ">
+		<![CDATA[ and c.birthday >= #{startBirthdayTime,jdbcType=TIMESTAMP} ]]>
+	</if>
+	<if test=" startBirthdayTime != null ">
+		<![CDATA[ and c.birthday <= #{startBirthdayTime,jdbcType=TIMESTAMP} ]]>
+	</if>
+	<if test=" phone != null  and phone > 0">
+		<!--  and c.phone = #{diId,jdbcType=INTEGER}-->
+	</if>
+	<if test=" name != null ">
+		and c.name = #{name,jdbcType=VARCHAR}
+	</if>
+	<if test=" tags != null ">
+		and e.tag_id in
+		<foreach collection="tags" index="index" item="item" open="(" separator="," close=")">  
+	        #{item,jdbcType=INTEGER} 
+	    </foreach>
+	</if>
+	<if test=" merchantsId != null  and merchantsId > 0">
+		and a.merchants_id = #{merchantsId,jdbcType=INTEGER}
+	</if>
+	group by 
+		c.name,
+		c.phone,
+		c.sex,
+		c.age,
+		c.birthday,
+		b.di_source
+	</select>
+
+	
+	<insert id="insertSelectiveEntity" useGeneratedKeys="true" keyProperty="uuserId" parameterType="io.clab.mpf.shop.business.entity.uuser.Uuser">
+		insert into t_upload_user 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test=" name != null">
+				name,
+			</if>
+			<if test=" phone != null  and phone > 0">
+				phone,
+			</if>
+			<if test=" sex != null and (sex == 0 or sex == 1)">
+				sex,
+			</if>
+			<if test=" age != null and age > 0">
+				age,
+			</if>
+			<if test=" birthday != null">
+				birthday,
+			</if>
+			<if test=" updateTime != null">
+				update_time,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test=" name != null">
+				#{name,jdbcType=VARCHAR},
+			</if>
+			<if test=" phone != null  and phone > 0">
+				#{phone,jdbcType=INTEGER},
+			</if>
+			<if test=" sex != null and (sex == 0 or sex == 1)">
+				#{sex,jdbcType=INTEGER},
+			</if>
+			<if test=" age != null and age > 0">
+				#{age,jdbcType=INTEGER},
+			</if>
+			<if test=" birthday != null">
+				#{birthday,jdbcType=VARCHAR},
+			</if>
+			<if test=" updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	
+	<update id="updateByPrimaryKey" parameterType="io.clab.mpf.shop.business.entity.uuser.Uuser">
+		update t_upload_user
+		<set>
+			<if test=" name != null">
+				name= #{name,jdbcType=VARCHAR},
+			</if>
+			<if test=" phone != null  and phone > 0">
+				phone= #{phone,jdbcType=INTEGER},
+			</if>
+			<if test=" sex != null and (sex == 0 or sex == 1)">
+				sex= #{sex,jdbcType=INTEGER},
+			</if>
+			<if test=" age != null and age > 0">
+				age= #{age,jdbcType=INTEGER},
+			</if>
+			<if test=" birthday != null">
+				birthday= #{birthday,jdbcType=VARCHAR},
+			</if>
+			<if test=" updateTime != null">
+				updateTime= #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where uuser_id = #{uuserId,jdbcType=INTEGER}
+	</update>
+	
+	
+	
+	
+
+</mapper>

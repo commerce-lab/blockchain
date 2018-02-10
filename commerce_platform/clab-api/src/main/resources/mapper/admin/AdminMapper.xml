@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.clab.mpf.shop.dao.admin.AdminMapper">
+	<resultMap id="BaseResultMap" type="io.clab.mpf.shop.entity.admin.Admin">
+		<id column="admin_id" property="adminId" jdbcType="INTEGER" />
+		<result column="merchants_id" property="merchantsId" jdbcType="INTEGER" />
+		<result column="admin_name" property="adminName" jdbcType="VARCHAR" />
+		<result column="password" property="password" jdbcType="VARCHAR" />
+		<result column="company_name" property="companyName" jdbcType="VARCHAR" />
+		<result column="description" property="description" jdbcType="VARCHAR" />
+		<result column="state" property="state" jdbcType="TINYINT" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="del_state" property="delState" jdbcType="TINYINT" />
+		<association property="role" javaType="io.clab.mpf.shop.entity.role.Role">
+			<id column="role_id" property="roleId" jdbcType="INTEGER" />
+			<result column="name" property="name" jdbcType="VARCHAR" />
+		</association>
+	</resultMap>
+	<sql id="Base_Column_List">
+		a.admin_id,a.merchants_id, a.admin_name, a.password,
+		a.company_name,
+		a.description, a.state, a.create_time, a.update_time,
+		a.del_state,
+		r.role_id, r.name
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_admin a
+		left join t_admin_role r on r.role_id = a.role_id
+		where
+		a.admin_id = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="getPage" parameterType="io.clab.mpf.shop.entity.admin.Admin"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_admin a
+		left join t_admin_role r on r.role_id = a.role_id
+		order
+		by a.create_time desc
+	</select>
+	<select id="getCount" parameterType="io.clab.mpf.shop.entity.admin.Admin"
+		resultType="java.lang.Integer">
+		select count(*)
+		from t_admin
+		where role_id =
+		#{role.roleId,jdbcType=INTEGER}
+		<if test="delState != null">
+			and del_state = #{delState, jdbcType=INTEGER}
+		</if>
+	</select>
+	<select id="getCountByAdminName" parameterType="io.clab.mpf.shop.entity.admin.Admin"
+		resultType="java.lang.Integer">
+		select count(*)
+		from t_admin
+		where admin_name = #{adminName,
+		jdbcType=VARCHAR}
+	</select>
+	<insert id="insertSelective" parameterType="io.clab.mpf.shop.entity.admin.Admin">
+		insert into t_admin
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="adminId != null">
+				admin_id,
+			</if>
+			<if test="role != null">
+				role_id,
+			</if>
+			<if test="adminName != null">
+				admin_name,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="password != null">
+				password,
+			</if>
+			<if test="rand != null">
+				rand,
+			</if>
+			<if test="companyName != null">
+				company_name,
+			</if>
+			<if test="description != null">
+				description,
+			</if>
+			<if test="state != null">
+				state,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+			<if test="delState != null">
+				del_state,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="adminId != null">
+				#{adminId,jdbcType=INTEGER},
+			</if>
+			<if test="role != null">
+				#{role.roleId,jdbcType=INTEGER},
+			</if>
+			<if test="adminName != null">
+				#{adminName,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="password != null">
+				#{password,jdbcType=VARCHAR},
+			</if>
+			<if test="rand != null">
+				#{rand,jdbcType=VARCHAR},
+			</if>
+			<if test="companyName != null">
+				#{companyName,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null">
+				#{description,jdbcType=VARCHAR},
+			</if>
+			<if test="state != null">
+				#{state,jdbcType=TINYINT},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="delState != null">
+				del_state = #{delState,jdbcType=TINYINT},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="io.clab.mpf.shop.entity.admin.Admin">
+		update t_admin
+		<set>
+			<if test="role != null">
+				role_id = #{role.roleId,jdbcType=INTEGER},
+			</if>
+			<if test="adminName != null">
+				admin_name = #{adminName,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="password != null">
+				password = #{password,jdbcType=VARCHAR},
+			</if>
+			<if test="rand != null">
+				rand = #{rand,jdbcType=VARCHAR},
+			</if>
+			<if test="companyName != null">
+				company_name = #{companyName,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null">
+				description = #{description,jdbcType=VARCHAR},
+			</if>
+			<if test="state != null">
+				state = #{state,jdbcType=TINYINT},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="delState != null">
+				del_state = #{delState,jdbcType=TINYINT},
+			</if>
+		</set>
+		where admin_id = #{adminId,jdbcType=INTEGER}
+	</update>
+	<!-- 登陆查询 -->
+	<resultMap id="BaseMap" type="io.clab.mpf.shop.entity.admin.Admin">
+		<id column="admin_id" property="adminId" jdbcType="INTEGER" />
+		<result column="admin_name" property="adminName" jdbcType="VARCHAR" />
+		<result column="password" property="password" jdbcType="VARCHAR" />
+		<result column="rand" property="rand" jdbcType="VARCHAR" />
+		<result column="company_name" property="companyName" jdbcType="VARCHAR" />
+		<result column="description" property="description" jdbcType="VARCHAR" />
+		<result column="state" property="state" jdbcType="TINYINT" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="del_state" property="delState" jdbcType="TINYINT" />
+	</resultMap>
+	<sql id="Base_Column">
+		admin_id, admin_name, password, rand,
+		company_name,
+		description, state, create_time,
+		update_time,
+		del_state
+	</sql>
+	<select id="login" resultMap="BaseMap">
+		select
+		<include refid="Base_Column" />
+		from t_admin
+		where del_state=2
+		<if test="adminName != null">
+			and admin_name = #{adminName,jdbcType=VARCHAR}
+		</if>
+	</select>
+</mapper>

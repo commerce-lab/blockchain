@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.clab.mpf.shop.dao.productcategory.ProductCategoryMapper" >
+  <resultMap id="BaseResultMap" type="io.clab.mpf.shop.entity.productcategory.ProductCategory" >
+    <id column="category_id" property="categoryId" jdbcType="INTEGER" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+    <result column="category_name" property="categoryName" jdbcType="VARCHAR" />
+    <result column="image" property="image" jdbcType="VARCHAR" />
+    <result column="state" property="state" jdbcType="TINYINT" />
+    <result column="simple_describe" property="simpleDescribe" jdbcType="VARCHAR" />
+    <result column="recommend" property="recommend" jdbcType="TINYINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="admin_id" property="adminId" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    category_id, parent_id, category_name, image, state, simple_describe, recommend,  create_time, 
+    update_time,admin_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_goods_category
+    where category_id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <insert id="insertSelective" parameterType="io.clab.mpf.shop.entity.productcategory.ProductCategory" >
+    insert into t_goods_category
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="categoryId != null" >
+        category_id,
+      </if>
+      <if test="parentId != null" >
+        parent_id,
+      </if>
+      <if test="categoryName != null" >
+        category_name,
+      </if>
+      <if test="image != null" >
+        image,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+      <if test="simpleDescribe != null" >
+        simple_describe,
+      </if>
+      <if test="recommend != null" >
+        recommend,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="adminId != null" >
+        admin_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >      
+      <if test="categoryId != null" >
+        #{categoryId,jdbcType=INTEGER},
+      </if>
+      <if test="parentId != null" >
+        #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="categoryName != null" >
+        #{categoryName,jdbcType=VARCHAR},
+      </if>
+      <if test="image != null" >
+        #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=TINYINT},
+      </if>
+      <if test="simpleDescribe != null" >
+        #{simpleDescribe,jdbcType=VARCHAR},
+      </if>
+      <if test="recommend != null" >
+        #{recommend,jdbcType=TINYINT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adminId != null" >
+        #{adminId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="io.clab.mpf.shop.entity.productcategory.ProductCategory" >
+    update t_goods_category
+    <set >      
+      <if test="parentId != null" >
+        parent_id=#{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="categoryName != null" >
+        category_name = #{categoryName,jdbcType=VARCHAR},
+      </if>
+      <if test="image != null" >
+        image = #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=TINYINT},
+      </if>
+      <if test="simpleDescribe != null" >
+        simple_describe = #{simpleDescribe,jdbcType=VARCHAR},
+      </if>
+      <if test="recommend != null" >
+        recommend = #{recommend,jdbcType=TINYINT},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adminId != null" >
+        admin_id = #{adminId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where category_id = #{categoryId,jdbcType=INTEGER}
+  </update>
+ 
+   <select id="getChildCategoryByCategoryId"  resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List" />
+	from t_goods_category where  parent_id=#{0}
+	and state &lt;&gt; #{1}
+	order by update_time desc
+  </select>
+  
+  <select id="getChildCategoryByCategoryIdAndState"  resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List" />
+	from t_goods_category where  parent_id=#{0}
+	and state = #{1}
+	order by update_time desc
+  </select>
+  
+  <select id="getFirstLevelCategory"  parameterType="java.lang.Integer" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List" />
+	from t_goods_category where  parent_id = 0 and state &lt;&gt; #{notState,jdbcType=INTEGER}
+	order by update_time desc
+  </select>
+  
+  <select id="getFirstLevelCategoryByState"  parameterType="java.lang.Integer" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List" />
+	from t_goods_category where  parent_id = 0 and state = #{notState,jdbcType=INTEGER}
+	order by update_time desc
+  </select>
+  
+  <select id="getPageFront"  resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List" />
+	from t_goods_category where  parent_id = 0 and state = 1
+	order by update_time desc	
+	<!-- limit 9 -->
+  </select>
+  
+  <select id="getPage" parameterType="io.clab.mpf.shop.entity.productcategory.ProductCategory" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List" />
+	from t_goods_category 
+  	where state  &lt;&gt; 3
+			and	parent_id = #{parentId,jdbcType=INTEGER}
+  	order by update_time desc
+   </select>
+</mapper>

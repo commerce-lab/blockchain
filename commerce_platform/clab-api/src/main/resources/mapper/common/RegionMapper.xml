@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.clab.mpf.shop.business.repository.common.RegionMapper">
+	<resultMap id="BaseResultMap" type="io.clab.mpf.shop.business.entity.common.Region">
+		<id column="region_id" property="regionId" jdbcType="INTEGER" />
+		<result column="region_code" property="regionCode" jdbcType="INTEGER" />
+		<result column="parent_code" property="parentCode" jdbcType="INTEGER" />
+		<result column="region_name" property="regionName" jdbcType="VARCHAR" />
+		<result column="region_name_en" property="regionNameEn" jdbcType="VARCHAR" />
+		<result column="region_name_en_short" property="regionNameEnShort" jdbcType="VARCHAR" />
+		<result column="level" property="level" jdbcType="INTEGER" />
+	</resultMap>
+	<select id="getRegionBycode" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+		select
+		*
+		from t_region a
+		where parent_code = #{regionCode,jdbcType=INTEGER}
+	</select>
+</mapper>

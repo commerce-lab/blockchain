@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.clab.mpf.shop.dao.receive.ReceiveMapper">
+	<resultMap id="BaseResultMap" type="io.clab.mpf.shop.entity.receive.Receive">
+		<id column="receive_id" property="receiveId" jdbcType="INTEGER" />
+		<result column="contact" property="contact" jdbcType="VARCHAR" />
+		<result column="tel" property="tel" jdbcType="VARCHAR" />
+		<result column="receive_province" property="receiveProvince"
+			jdbcType="VARCHAR" />
+		<result column="receive_city" property="receiveCity" jdbcType="VARCHAR" />
+		<result column="receive_county" property="receiveCounty"
+			jdbcType="VARCHAR" />
+		<result column="receive_address" property="receiveAddress"
+			jdbcType="VARCHAR" />
+		<result column="del_state" property="delState" jdbcType="TINYINT" />
+		<result column="isDefault" property="isDefault" jdbcType="TINYINT" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="user_id" property="userId" jdbcType="INTEGER" />
+		
+	</resultMap>
+	<sql id="Base_Column_List">
+		receive_id, contact, tel, receive_province, receive_city, receive_county,
+		receive_address,
+		user_id, del_state, isDefault,create_time, update_time
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_user_receive
+		where receive_id = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="selectDefaultReceive" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_user_receive
+		where isDefault=1 and del_state !=1 and user_id = #{userId,jdbcType=INTEGER}
+	</select>
+	<select id="selectReceive" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_user_receive
+		where del_state!=1 and user_id =#{userId,jdbcType=INTEGER}
+	</select>
+	<select id="getPageFront" parameterType="io.clab.mpf.shop.entity.receive.Receive"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_user_receive
+		where del_state=2
+		<if test="userId != null">
+			and user_id = #{userId,jdbcType=VARCHAR}
+		</if>
+		order by create_time desc
+	</select>
+	<!-- 查看当前用户的收货地址 -->
+	<select id="selectUserReceive" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_user_receive
+		where del_state = 2 and user_id = #{userId,jdbcType=INTEGER}
+		order by create_time desc
+		limit 1
+	</select>
+	<insert id="insertSelective" parameterType="io.clab.mpf.shop.entity.receive.Receive"
+		useGeneratedKeys="true" keyProperty="receiveId">
+		insert into t_user_receive
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="receiveId != null">
+				receive_id,
+			</if>
+			<if test="contact != null">
+				contact,
+			</if>
+			<if test="tel != null">
+				tel,
+			</if>
+			<if test="receiveProvince != null">
+				receive_province,
+			</if>
+			<if test="receiveCity != null">
+				receive_city,
+			</if>
+			<if test="receiveCounty != null">
+				receive_county,
+			</if>
+			<if test="receiveAddress != null">
+				receive_address,
+			</if>
+			<if test="userId != null">
+				user_id,
+			</if>
+			<if test="delState != null">
+				del_state,
+			</if>
+			<if test="isDefault != null">
+				isDefault,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="receiveId != null">
+				#{receiveId,jdbcType=INTEGER},
+			</if>
+			<if test="contact != null">
+				#{contact,jdbcType=VARCHAR},
+			</if>
+			<if test="tel != null">
+				#{tel,jdbcType=VARCHAR},
+			</if>
+			<if test="receiveProvince != null">
+				#{receiveProvince,jdbcType=VARCHAR},
+			</if>
+			<if test="receiveCity != null">
+				#{receiveCity,jdbcType=VARCHAR},
+			</if>
+			<if test="receiveCounty != null">
+				#{receiveCounty,jdbcType=VARCHAR},
+			</if>
+			<if test="receiveAddress != null">
+				#{receiveAddress,jdbcType=VARCHAR},
+			</if>
+			<if test="userId != null">
+				#{userId,jdbcType=VARCHAR},
+			</if>
+			<if test="delState != null">
+				#{delState,jdbcType=TINYINT},
+			</if>
+			<if test="isDefault != null">
+				#{isDefault,jdbcType=TINYINT},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="io.clab.mpf.shop.entity.receive.Receive">
+		update t_user_receive
+		<set>
+			<if test="contact != null">
+				contact = #{contact,jdbcType=VARCHAR},
+			</if>
+			<if test="tel != null">
+				tel = #{tel,jdbcType=VARCHAR},
+			</if>
+			<if test="receiveProvince != null">
+				receive_province = #{receiveProvince,jdbcType=VARCHAR},
+			</if>
+			<if test="receiveCity != null">
+				receive_city = #{receiveCity,jdbcType=VARCHAR},
+			</if>
+			<if test="receiveCounty != null">
+				receive_county = #{receiveCounty,jdbcType=VARCHAR},
+			</if>
+			<if test="receiveAddress != null">
+				receive_address = #{receiveAddress,jdbcType=VARCHAR},
+			</if>
+			<if test="userId != null">
+				user_id = #{userId,jdbcType=VARCHAR},
+			</if>
+			<if test="delState != null">
+				del_state = #{delState,jdbcType=TINYINT},
+			</if>
+			<if test="isDefault != null">
+				isDefault = #{isDefault,jdbcType=TINYINT},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where receive_id = #{receiveId,jdbcType=INTEGER}
+	</update>
+</mapper>

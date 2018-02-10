@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.clab.mpf.shop.business.repository.uuser.DiUuserMapper">
+	<resultMap id="BaseResultMap" type="io.clab.mpf.shop.business.entity.uuser.DiUuser">
+		<id column="di_uuser_id" property="diUuserId" jdbcType="INTEGER" />
+		<result column="uuser_id" property="uuserId" jdbcType="INTEGER" />
+		<result column="di_id" property="diId" jdbcType="INTEGER" />
+	</resultMap>
+	<insert id="insertSelectiveEntity" parameterType="io.clab.mpf.shop.business.entity.uuser.DiUuser">
+		insert into t_di_uuser(uuser_id,di_id,merchants_id,di_source,pay_points,pay_state) 
+		values 
+		(#{uuserId,jdbcType=INTEGER}
+		,#{diId,jdbcType=INTEGER}
+		,#{merchantsId,jdbcType=INTEGER}
+		,#{diSource,jdbcType=INTEGER}
+		,#{payPoints,jdbcType=INTEGER}
+		,#{payState,jdbcType=INTEGER}
+		)
+	</insert>
+
+</mapper>

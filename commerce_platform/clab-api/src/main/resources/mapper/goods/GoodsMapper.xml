@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.clab.mpf.shop.dao.goods.GoodsMapper">
+	<resultMap id="BaseResultMap" type="io.clab.mpf.shop.entity.goods.Goods">
+		<id column="goods_id" property="goodsId" jdbcType="INTEGER" />
+		<!--新增 商品类别 -->
+		<id column="category_id" property="categoryId" jdbcType="INTEGER" />
+		<result column="goods_name" property="goodsName" jdbcType="VARCHAR" />
+		<!--新增 别名 -->
+		<result column="nickname" property="nickName" jdbcType="VARCHAR" />
+		<result column="image" property="image" jdbcType="VARCHAR" />
+		<result column="del_state" property="delState" jdbcType="TINYINT" />
+		<result column="simple_describe" property="simpleDescribe"
+			jdbcType="VARCHAR" />
+		<result column="detail_describe" property="detailDescribe"
+			jdbcType="VARCHAR" />
+		<result column="is_marketable" property="isMarketable"
+			jdbcType="TINYINT" />
+			
+		<result column="recommend" property="recommend" jdbcType="TINYINT" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="admin_id" property="adminId" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		goods_id, category_id,nickname,goods_name, image, simple_describe,is_marketable,
+		detail_describe, recommend,
+		del_state, create_time, update_time, admin_id
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_goods
+		where goods_id = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="getAllSelectGoods" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_goods
+		<where>
+			<if test="goodsIds != null and goodsIds != ''">
+				goods_id in (${goodsIds})
+			</if>
+			<if test="goodsIds == null or goodsIds == ''">
+				goods_id =null
+			</if>
+		</where>
+	</select>
+	<select id="getPage" parameterType="io.clab.mpf.shop.entity.goods.Goods"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_goods
+		where del_state=1
+		order by recommend,update_time desc
+	</select>
+	<select id="getPageFront" parameterType="io.clab.mpf.shop.entity.goods.Goods"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_goods
+		where del_state=1 and is_marketable=1
+		<if test="recommend != null">
+			and recommend = #{recommend,jdbcType=TINYINT}
+		</if>
+		order by recommend,update_time desc
+	</select>
+	
+	<select id="getPageFrontByGoodsCategory" parameterType="io.clab.mpf.shop.entity.goods.Goods"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_goods
+		where del_state=1 and is_marketable=1
+		<if test="recommend != null">
+			and recommend = #{recommend,jdbcType=TINYINT}
+		</if>
+			and (category_id=#{categoryId,jdbcType=TINYINT} or category_id 
+        in ( select category_id from t_goods_category where category_id=#{categoryId,jdbcType=TINYINT} or parent_id=#{categoryId,jdbcType=TINYINT}))
+							
+		order by 
+		<if test="recommend != null">
+			recommend,
+		</if>
+		update_time desc
+	</select>
+	<!--分页获取推荐的上架商品，依据更新时间倒序取商品,不含删除状态，供前端调用  -->
+	<select id="getPageFrontRecommendAndIsMarketableGoods" parameterType="io.clab.mpf.shop.entity.goods.Goods"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_goods
+		where del_state=1 and is_marketable=1		
+			and recommend = 1		
+		order by 		
+		update_time desc
+	</select>
+	<select id="getPageFrontByGoodsName" parameterType="io.clab.mpf.shop.entity.goods.Goods"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_goods
+		where del_state=1 and is_marketable=1
+		<if test="recommend != null">
+			and recommend = #{recommend,jdbcType=TINYINT}
+		</if>
+			and  goods_name LIKE #{goodsName,jdbcType=VARCHAR}
+			
+		order by 
+		<if test="recommend != null">
+			recommend,
+		</if>
+		update_time desc
+	</select>
+	
+	<select id="getPageByQueryGoodsAdminVO" parameterType="io.clab.mpf.shop.entity.goods.QueryGoodsAdminVO"
+		resultMap="BaseResultMap">
+		select
+				
+		a.goods_id as goods_id, a.category_id as category_id,a.nickname as nickname,a.goods_name as goods_name, 
+		a.image as image, a.simple_describe as simple_describe,a.is_marketable as is_marketable,
+		b.category_name as detail_describe, a.recommend as recommend,	a.del_state as del_state, 
+		a.create_time as create_time, a.update_time as update_time, a.admin_id as admin_id
+		
+		from t_goods as a 			
+		left join t_goods_category as b on a.category_id = b.category_id
+		where a.del_state=1 
+		<if test="isMarketable != null  and isMarketable != ''">
+			and a.is_marketable = #{isMarketable,jdbcType=TINYINT}
+		</if>
+		<if test="createTime_le != null  and createTime_le != ''">
+			and a.create_time &lt;= #{createTime_le,jdbcType=TIMESTAMP}
+		</if>
+		<if test="createTime_ge != null and createTime_ge != ''">
+			and a.create_time &gt;= #{createTime_ge,jdbcType=TIMESTAMP}
+		</if>
+		<if test="goodsName != null">
+			and  a.goods_name LIKE #{goodsName,jdbcType=VARCHAR}
+		</if>
+		<if test="categoryId != null and categoryId != ''">	
+			and (a.category_id=#{categoryId,jdbcType=TINYINT} or a.category_id 
+        in ( select category_id from t_goods_category where category_id=#{categoryId,jdbcType=TINYINT} or parent_id=#{categoryId,jdbcType=TINYINT}))
+		</if>	
+		order by a.create_time asc
+	</select>
+	
+	<select id="selectGoodList" parameterType="io.clab.mpf.shop.entity.goods.QueryGoodsAdminVO"
+        resultMap="BaseResultMap">
+        select
+                
+        a.goods_id as goods_id, a.category_id as category_id,a.nickname as nickname,a.goods_name as goods_name, 
+        a.image as image, a.simple_describe as simple_describe,a.is_marketable as is_marketable,
+        b.category_name as detail_describe, a.recommend as recommend,   a.del_state as del_state, 
+        a.create_time as create_time, a.update_time as update_time, a.admin_id as admin_id
+        
+        from t_goods as a           
+        left join t_goods_category as b on a.category_id = b.category_id
+        where a.del_state=1 
+        <if test="isMarketable != null  and isMarketable != ''">
+            and a.is_marketable = #{isMarketable,jdbcType=TINYINT}
+        </if>
+        <if test="createTime_le != null  and createTime_le != ''">
+            and a.create_time &lt;= #{createTime_le,jdbcType=TIMESTAMP}
+        </if>
+        <if test="createTime_ge != null and createTime_ge != ''">
+            and a.create_time &gt;= #{createTime_ge,jdbcType=TIMESTAMP}
+        </if>
+        <if test="goodsName != null">
+            and  a.goods_name LIKE #{goodsName,jdbcType=VARCHAR}
+        </if>
+        <if test="categoryId != null and categoryId != ''"> 
+            and (a.category_id=#{categoryId,jdbcType=TINYINT} or a.category_id 
+        in ( select category_id from t_goods_category where category_id=#{categoryId,jdbcType=TINYINT} or parent_id=#{categoryId,jdbcType=TINYINT}))
+        </if>   
+        order by a.create_time asc
+    </select>
+	
+	
+	<select id="getPageFrontByMyStoreGoods" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		select 
+        a.goods_id goods_id, a.category_id category_id,a.nickname nickname,a.goods_name goods_name,
+        a.image image, a.simple_describe simple_describe,a.is_marketable is_marketable,
+		a.detail_describe detail_describe, a.recommend recommend,
+		a.del_state del_state, a.create_time create_time,a.update_time update_time, a.admin_id admin_id
+        from t_store_goods as b join t_goods as a 
+        on a.goods_id=b.goods_id
+		where del_state=1 and is_marketable=1
+        and b.user_id= #{userId,jdbcType=INTEGER}
+		order by 
+		b.update_time desc
+	</select>
+	
+	
+	<select id="getOne" parameterType="io.clab.mpf.shop.entity.goods.Goods"
+		resultMap="BaseResultMap"><!-- 废弃掉 -->
+		select
+		<include refid="Base_Column_List" />
+		from t_goods
+		where 1=1 
+			<if test="goodsName != null">
+				and	goods_name = #{goodsName,jdbcType=VARCHAR}
+			</if>
+			<if test="nickName != null">
+				and	nickname = #{nickName,jdbcType=VARCHAR}
+			</if>
+			<!-- <if test="image != null">
+				and	image = #{image,jdbcType=VARCHAR}
+			</if> -->
+			<if test="simpleDescribe != null">
+				and	simple_describe = #{simpleDescribe,jdbcType=VARCHAR}
+			</if>
+			<if test="isMarketable != null">
+				and	is_marketable =#{isMarketable,jdbcType=TINYINT}
+			</if>
+			<if test="detailDescribe != null">
+				and	detail_describe = #{detailDescribe,jdbcType=VARCHAR}
+			</if>
+			<if test="recommend != null">
+				and	recommend = #{recommend,jdbcType=TINYINT}
+			</if>
+			<if test="delState != null">
+				and	del_state = #{delState,jdbcType=TINYINT}
+			</if>
+			<!-- <if test="createTime != null">
+				and	create_time = #{createTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="updateTime != null">
+				and	update_time = #{updateTime,jdbcType=TIMESTAMP}
+			</if> -->
+			<if test="adminId != null">
+				and	admin_id = #{adminId,jdbcType=INTEGER}
+			</if>
+		order by recommend,update_time desc
+		limit 1
+	</select>
+	
+	<insert id="insertSelective" parameterType="io.clab.mpf.shop.entity.goods.Goods" useGeneratedKeys="true" keyProperty="goodsId">  <!-- 获取插入的主键id -->
+		insert into t_goods
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="goodsId != null">
+				goods_id,
+			</if>
+			<if test="categoryId != null">
+				category_id,
+			</if>
+			<if test="goodsName != null">
+				goods_name,
+			</if>
+			<if test="nickName != null">
+				nickname,
+			</if>
+			<if test="image != null">
+				image,
+			</if>
+			<if test="simpleDescribe != null">
+				simple_describe,
+			</if>
+			<if test="isMarketable != null">
+				is_marketable,
+			</if>
+			<if test="detailDescribe != null">
+				detail_describe,
+			</if>
+			<if test="recommend != null">
+				recommend,
+			</if>
+			<if test="delState != null">
+				del_state,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+			<if test="adminId != null">
+				admin_id,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="goodsId != null">
+				#{goodsId,jdbcType=INTEGER},
+			</if>
+			<if test="categoryId != null">
+				#{categoryId,jdbcType=INTEGER},
+			</if>
+			<if test="goodsName != null">
+				#{goodsName,jdbcType=VARCHAR},
+			</if>
+			<if test="nickName != null">
+				#{nickName,jdbcType=VARCHAR},
+			</if>
+			<if test="image != null">
+				#{image,jdbcType=VARCHAR},
+			</if>
+			<if test="simpleDescribe != null">
+				#{simpleDescribe,jdbcType=VARCHAR},
+			</if>
+			<if test="isMarketable != null">
+				#{isMarketable,jdbcType=TINYINT},
+			</if>
+			<if test="detailDescribe != null">
+				#{detailDescribe,jdbcType=VARCHAR},
+			</if>
+			<if test="recommend != null">
+				#{recommend,jdbcType=TINYINT},
+			</if>
+			<if test="delState != null">
+				#{delState,jdbcType=TINYINT},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="adminId != null">
+				#{adminId,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="io.clab.mpf.shop.entity.goods.Goods">
+		update t_goods
+		<set>
+			<if test="categoryId != null">
+				category_id = #{categoryId,jdbcType=INTEGER},
+			</if>
+			<if test="goodsName != null">
+				goods_name = #{goodsName,jdbcType=VARCHAR},
+			</if>
+			<if test="nickName != null">
+				nickname = #{nickName,jdbcType=VARCHAR},
+			</if>
+			<if test="image != null">
+				image = #{image,jdbcType=VARCHAR},
+			</if>
+			<if test="simpleDescribe != null">
+				simple_describe = #{simpleDescribe,jdbcType=VARCHAR},
+			</if>
+			<if test="isMarketable != null">
+				is_marketable =#{isMarketable,jdbcType=TINYINT},
+			</if>
+			<if test="detailDescribe != null">
+				detail_describe = #{detailDescribe,jdbcType=VARCHAR},
+			</if>
+			<if test="recommend != null">
+				recommend = #{recommend,jdbcType=TINYINT},
+			</if>
+			<if test="delState != null">
+				del_state = #{delState,jdbcType=TINYINT},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="adminId != null">
+				admin_id = #{adminId,jdbcType=INTEGER},
+			</if>
+		</set>
+		where goods_id = #{goodsId,jdbcType=INTEGER}
+	</update>
+</mapper>

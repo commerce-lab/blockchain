@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.clab.mpf.shop.dao.storegoods.StoreGoodsMapper">
+	<resultMap id="BaseResultMap" type="io.clab.mpf.shop.entity.storegoods.StoreGoods">
+		<id column="store_id" property="storeId" jdbcType="INTEGER" />
+		<result column="user_id" property="userId" jdbcType="INTEGER" />
+		<result column="goods_id" property="goodsId" jdbcType="INTEGER" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="state" property="state" jdbcType="TINYINT" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		store_id, user_id, goods_id,
+		create_time, update_time,state
+	</sql>
+	<insert id="insertSelective" parameterType="io.clab.mpf.shop.entity.storegoods.StoreGoods">
+		insert into t_store_goods
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="storeId != null">
+				store_id,
+			</if>
+			<if test="userId != null">
+				user_id,
+			</if>
+			<if test="goodsId != null">
+				goods_id,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+			<if test="state != null">
+				state,
+			</if>
+			
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="storeId != null">
+				#{storeId,jdbcType=INTEGER},
+			</if>
+			<if test="userId != null">
+				#{userId,jdbcType=INTEGER},
+			</if>
+			<if test="goodsId != null">
+				#{goodsId,jdbcType=INTEGER},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="state != null">
+				#{state,jdbcType=TINYINT},
+			</if>
+			
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="io.clab.mpf.shop.entity.storegoods.StoreGoods">
+		update t_store_goods
+		<set>
+			<if test="storeId != null">
+				store_id = #{storeId,jdbcType=INTEGER},
+			</if>
+			<if test="userId != null">
+				user_id = #{userId,jdbcType=INTEGER},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				update_time =#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="state != null">
+				state = #{state,jdbcType=TINYINT},
+			</if>			
+		</set>
+		where store_id = #{storeId,jdbcType=INTEGER}
+	</update>
+	<delete id="delete" parameterType="io.clab.mpf.shop.entity.storegoods.StoreGoods">
+		delete from t_store_goods where
+		store_id=#{storeId,jdbcType=INTEGER}
+		or (user_id=#{userId,jdbcType=INTEGER} and goods_id=#{goodsId,jdbcType=INTEGER})
+	</delete>
+	
+	<select id="queryAllStoreGoodsByUserId" parameterType="io.clab.mpf.shop.entity.shoppingcart.ShoppingCart"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_store_goods
+		where user_id=#{userId,jdbcType=INTEGER}
+	</select>
+	
+	<select id="queryStoreGoodsByUserIdAndGoodsId" parameterType="io.clab.mpf.shop.entity.shoppingcart.ShoppingCart"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_store_goods
+		where user_id=#{userId,jdbcType=INTEGER}
+		and goods_id=#{goodsId,jdbcType=INTEGER}
+	</select>	
+</mapper>

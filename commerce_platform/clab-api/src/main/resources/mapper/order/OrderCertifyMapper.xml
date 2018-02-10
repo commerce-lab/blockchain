@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.clab.mpf.shop.dao.order.OrderCertifyMapper">
+	<insert id="insertSelective" parameterType="io.clab.mpf.shop.dao.order.OrderCertifyMapper">
+		insert into t_order_certify
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="orderId != null">
+				order_id,
+			</if>
+			<if test="orderNumber != null">
+				order_number,
+			</if>
+			<if test="imageUrl != null">
+				image_url,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="admin != null">
+				admin_id,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="orderId != null">
+				#{orderId,jdbcType=INTEGER},
+			</if>
+			<if test="orderNumber != null">
+				#{orderNumber,jdbcType=VARCHAR},
+			</if>
+			<if test="imageUrl != null">
+				#{imageUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="admin != null">
+				#{admin.adminId,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+</mapper>

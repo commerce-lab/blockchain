@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.clab.mpf.shop.dao.logistics.LogisticsMapper" >
+  <resultMap id="BaseResultMap" type="io.clab.mpf.shop.entity.logistics.Logistics" >
+    <id column="logistics_id" property="logisticsId" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="price" property="price" jdbcType="INTEGER" />
+    <result column="state" property="state" jdbcType="TINYINT" />
+    <result column="del_state" property="delState" jdbcType="TINYINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="admin_id" property="adminId" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    logistics_id, name, price, state, del_state, create_time, update_time, admin_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_logistics
+    where logistics_id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="getFirstLogistics" resultMap="BaseResultMap">
+ 	select 
+	 <include refid="Base_Column_List" />
+	from t_logistics
+	order by create_time desc
+	limit 1
+  </select>
+   <select id="getPage" parameterType="io.clab.mpf.shop.entity.logistics.Logistics" resultMap="BaseResultMap">
+  	select logistics_id,name,price,state
+	from t_logistics
+	where del_state=2
+	order by create_time desc
+   </select>
+   <select id="getListLogistics"  resultMap="BaseResultMap">
+   	select   
+	<include refid="Base_Column_List" />
+	from t_logistics
+	where del_state=2 and state=1
+   </select>
+  <insert id="insertSelective" parameterType="io.clab.mpf.shop.entity.logistics.Logistics" >
+    insert into t_logistics
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="logisticsId != null" >
+        logistics_id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="price != null" >
+        price,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+      <if test="delState != null" >
+        del_state,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="adminId != null" >
+        admin_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="logisticsId != null" >
+        #{logisticsId,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null" >
+        #{price,jdbcType=INTEGER},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=TINYINT},
+      </if>
+      <if test="delState != null" >
+        #{delState,jdbcType=TINYINT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adminId != null" >
+        #{adminId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="io.clab.mpf.shop.entity.logistics.Logistics" >
+    update t_logistics
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null" >
+        price = #{price,jdbcType=INTEGER},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=TINYINT},
+      </if>
+      <if test="delState != null" >
+        del_state = #{delState,jdbcType=TINYINT},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adminId != null" >
+        admin_id = #{adminId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where logistics_id = #{logisticsId,jdbcType=INTEGER}
+  </update>
+</mapper>

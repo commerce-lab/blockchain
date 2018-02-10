@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.clab.mpf.shop.dao.serialNumber.SerialNumberDao">
+	<!-- 查询 用户名 个数 -->
+	<select id="getNum" resultType="java.util.Map">
+		select * from t_serial_number
+	</select>
+
+	<update id="update">
+		update t_serial_number
+		<set>
+			<if test="date != null">
+				date= #{date,jdbcType=VARCHAR},
+			</if>
+			<if test="num != null">
+				num=#{num,jdbcType=VARCHAR},
+			</if>
+		</set>
+	</update>
+
+	<insert id="insert">
+		insert into t_serial_number (date, num) values (
+		#{date,jdbcType=VARCHAR},
+		#{num,jdbcType=VARCHAR})
+	</insert>
+</mapper>

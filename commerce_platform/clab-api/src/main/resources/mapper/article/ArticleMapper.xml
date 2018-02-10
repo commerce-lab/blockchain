@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.clab.mpf.shop.dao.article.ArticleMapper">
+	<resultMap id="BaseResultMap" type="io.clab.mpf.shop.entity.article.Article">
+		<id column="article_id" property="articleId" jdbcType="INTEGER" />
+		<!--新增 商品类别 -->
+		<id column="category_id" property="categoryId" jdbcType="INTEGER" />
+		<result column="title" property="title" jdbcType="VARCHAR" />
+		<!--新增 别名 -->
+		<result column="content" property="content" jdbcType="VARCHAR" />
+		<result column="author" property="author" jdbcType="VARCHAR" />
+		<result column="publishTime" property="publishTime" jdbcType="TIMESTAMP" />
+		<result column="publisher" property="publisher"
+			jdbcType="VARCHAR" />
+		<result column="is_published" property="isPublished"
+			jdbcType="TINYINT" />
+		<result column="is_top" property="isTop" jdbcType="TINYINT" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="delState" property="delState" jdbcType="TINYINT" />
+		<result column="state" property="state" jdbcType="TINYINT" />
+		<result column="admin_id" property="adminId" jdbcType="INTEGER" />
+		<result column="key_words" property="keyWords" jdbcType="VARCHAR" />
+		<result column="image" property="imageUrl" jdbcType="VARCHAR" />
+		<result column="recommend" property="recommend" jdbcType="TINYINT" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		article_id, category_id,title,content, author, publishTime,publisher,
+		is_published, is_top,
+		create_time, update_time, state, admin_id,key_words,image,recommend
+	</sql>
+	<select id="getPageFront" parameterType="io.clab.mpf.shop.entity.article.Article"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_article
+		where del_state=2 and state=1
+		order by create_time desc
+	</select>
+	<update id="updateByPrimaryKey" parameterType="io.clab.mpf.shop.entity.article.Article">
+		update t_article
+		<set>
+			<if test="articleId != null">
+				article_id = #{articleId,jdbcType=INTEGER},
+			</if>
+			<if test="categoryId != null">
+				category_id = #{categoryId,jdbcType=INTEGER},
+			</if>
+			<if test="title != null">
+				title = #{title,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null">
+				content = #{content,jdbcType=VARCHAR},
+			</if>
+			<if test="author != null">
+				author = #{author,jdbcType=VARCHAR},
+			</if>
+			<if test="publishTime != null">
+				publishTime = #{publishTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="publisher != null">
+				publisher = #{publisher,jdbcType=VARCHAR},
+			</if>
+			<if test="isPublished != null">
+				is_published = #{isPublished,jdbcType=TINYINT},
+			</if>
+			<if test="isTop != null">
+				is_top = #{isTop,jdbcType=TINYINT},
+			</if>
+			<if test="state != null">
+				state = #{state,jdbcType=TINYINT},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="adminId != null">
+				admin_id = #{adminId,jdbcType=INTEGER},
+			</if>
+			<if test="keyWords != null">
+				key_words = #{keyWords,jdbcType=VARCHAR},
+			</if>
+			<if test="imageUrl != null">
+				image = #{imageUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="recommend != null">
+				recommend = #{recommend,jdbcType=TINYINT},
+			</if>
+			<if test="delState != null">
+				del_state = #{delState,jdbcType=TINYINT},
+			</if>
+		</set>
+		where article_id = #{articleId,jdbcType=INTEGER}
+	</update>
+	<select id="getPage" parameterType="io.clab.mpf.shop.entity.article.Article"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_article
+		where del_state=2
+		order by recommend,update_time desc
+	</select>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_article
+		where article_id = #{id,jdbcType=INTEGER}
+	</select>
+	<insert id="insertSelective" parameterType="io.clab.mpf.shop.entity.article.Article">
+		insert into t_article
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="articleId != null">
+				article_id,
+			</if>
+			<if test="categoryId != null">
+				category_id,
+			</if>
+			<if test="title != null">
+				title,
+			</if>
+			<if test="content != null">
+				content,
+			</if>
+			<if test="author != null">
+				author,
+			</if>
+			<if test="publishTime != null">
+				publishTime,
+			</if>
+			<if test="publisher != null">
+				publisher,
+			</if>
+			<if test="isPublished != null">
+				isPublished,
+			</if>
+			<if test="isTop != null">
+				is_top,
+			</if>
+			<if test="state != null">
+				state,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+			<if test="adminId != null">
+				admin_id,
+			</if>
+			<if test="keyWords != null">
+				key_words,
+			</if>
+			<if test="imageUrl != null">
+				image,
+			</if>
+			<if test="recommend != null">
+				recommend,
+			</if>
+			<if test="delState != null">
+				del_state,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="articleId != null">
+				#{articleId,jdbcType=INTEGER},
+			</if>
+			<if test="categoryId != null">
+				#{categoryId,jdbcType=INTEGER},
+			</if>
+			<if test="title != null">
+				#{title,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null">
+				#{content,jdbcType=VARCHAR},
+			</if>
+			<if test="author != null">
+				#{author,jdbcType=VARCHAR},
+			</if>
+			<if test="publishTime != null">
+				#{publishTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="publisher != null">
+				#{publisher,jdbcType=VARCHAR},
+			</if>
+			<if test="isPublished != null">
+				#{isPublished,jdbcType=TINYINT},
+			</if>
+			<if test="isTop != null">
+				#{isTop,jdbcType=TINYINT},
+			</if>
+			<if test="state != null">
+				#{state,jdbcType=TINYINT},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="adminId != null">
+				#{adminId,jdbcType=INTEGER},
+			</if>
+			<if test="keyWords != null">
+				#{keyWords,jdbcType=VARCHAR},
+			</if>
+			<if test="imageUrl != null">
+				#{imageUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="recommend != null">
+				#{recommend,jdbcType=TINYINT},
+			</if>
+			<if test="delState != null">
+				del_state = #{delState,jdbcType=TINYINT},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="io.clab.mpf.shop.entity.article.Article">
+		update t_article
+		<set>
+			<if test="categoryId != null">
+				category_id = #{categoryId,jdbcType=INTEGER},
+			</if>
+			<if test="title != null">
+				title = #{title,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null">
+				content = #{content,jdbcType=VARCHAR},
+			</if>
+			<if test="author != null">
+				author = #{author,jdbcType=VARCHAR},
+			</if>
+			<if test="publishTime != null">
+				publishTime = #{publishTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="publisher != null">
+				publisher = #{publisher,jdbcType=VARCHAR},
+			</if>
+			<if test="isPublished != null">
+				is_published = #{isPublished,jdbcType=TINYINT},
+			</if>
+			<if test="isTop != null">
+				is_top = #{isTop,jdbcType=TINYINT},
+			</if>
+			<if test="state != null">
+				state = #{state,jdbcType=TINYINT},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="adminId != null">
+				admin_id = #{adminId,jdbcType=INTEGER},
+			</if>
+			<if test="keyWords != null">
+				key_words = #{keyWords,jdbcType=VARCHAR},
+			</if>
+			<if test="imageUrl != null">
+				image = #{imageUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="recommend != null">
+				recommend = #{recommend,jdbcType=TINYINT},
+			</if>
+			<if test="delState != null">
+				del_state = #{delState,jdbcType=TINYINT},
+			</if>
+		</set>
+		where article_id = #{articleId,jdbcType=INTEGER}
+	</update>
+</mapper>

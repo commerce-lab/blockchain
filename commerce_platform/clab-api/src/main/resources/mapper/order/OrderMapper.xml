@@ -1,0 +1,614 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.clab.mpf.shop.dao.order.OrderMapper">
+	<resultMap id="BaseResultMap" type="io.clab.mpf.shop.entity.order.Order">
+		<id column="order_id" property="orderId" jdbcType="INTEGER" />
+		<result column="order_number" property="orderNumber" jdbcType="VARCHAR" />
+		<result column="total_amount" property="totalAmount" jdbcType="INTEGER" />
+		<result column="paid_amount" property="paidAmount" jdbcType="INTEGER" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="logistics_state" property="logisticsState"
+			jdbcType="TINYINT" />
+		<result column="invoice_tag" property="invoiceTag" />
+		<result column="pay_state" property="payState" jdbcType="TINYINT" />
+		<result column="send_time" property="sendTime" jdbcType="TIMESTAMP" />
+		<association property="user" javaType="io.clab.mpf.shop.entity.user.User">
+			<id column="user_id" property="userId" jdbcType="INTEGER" />
+			<result column="phone" property="phone" jdbcType="VARCHAR" />
+		</association>
+		<association property="payment" javaType="io.clab.mpf.shop.entity.payment.Payment">
+			<id column="payment_id" property="paymentId" jdbcType="INTEGER" />
+			<result column="name" property="name" jdbcType="VARCHAR" />
+		</association>
+		<association property="receive" javaType="io.clab.mpf.shop.entity.receive.Receive">
+			<id column="receive_id" property="receiveId" jdbcType="INTEGER" />
+			<result column="contact" property="contact" jdbcType="VARCHAR" />
+			<result column="tel" property="tel" jdbcType="VARCHAR" />
+			<result column="receive_province" property="receiveProvince"
+				jdbcType="VARCHAR" />
+			<result column="receive_city" property="receiveCity" jdbcType="VARCHAR" />
+			<result column="receive_county" property="receiveCounty"
+				jdbcType="VARCHAR" />
+			<result column="receive_address" property="receiveAddress"
+				jdbcType="VARCHAR" />
+		</association>
+		<collection property="orderDetailsList" ofType="io.clab.mpf.shop.entity.order.OrderDetails">
+			<id column="order_details_id" property="orderDetailsId" jdbcType="INTEGER" />
+			<result column="goods_name" property="goodsName" jdbcType="VARCHAR" />
+			<result column="unit_name" property="unitName" jdbcType="VARCHAR" />
+			<result column="unit_price" property="unitPrice" jdbcType="INTEGER" />
+			<result column="num" property="num" jdbcType="INTEGER" />
+			<result column="details_amount" property="detailsAmount"
+				jdbcType="INTEGER" />
+		</collection>
+	</resultMap>
+	
+	
+	<!--以下为导出所用  -->
+	<resultMap id="BaseExportResultMap" type="io.clab.mpf.shop.entity.order.Order">
+		<id column="order_id" property="orderId" jdbcType="INTEGER" />
+		<result column="order_number" property="orderNumber" jdbcType="VARCHAR" />
+		<result column="user_id" property="userId" jdbcType="INTEGER" />
+		<result column="total_amount" property="totalAmount" jdbcType="INTEGER" />
+		<result column="paid_amount" property="paidAmount" jdbcType="INTEGER" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="logistics_state" property="logisticsState"
+			jdbcType="TINYINT" />
+		<result column="invoice_tag" property="invoiceTag" />
+		<result column="pay_state" property="payState" jdbcType="TINYINT" />
+		<result column="send_time" property="sendTime" jdbcType="TIMESTAMP" />
+		<result column="payment_id" property="paymentId" jdbcType="INTEGER" />
+		<result column="receive_id" property="receiveId" jdbcType="INTEGER" />		
+		<!-- <association property="user" select="selectUserByUserId" column="user_id"/>
+		<association property="payment" select="selectPaymentByPaymentId" column="payment_id" />
+		<association property="receive" select="selectReceiveByReceiveId" column="receive_id" /> -->
+		<!--上面的方法也能查询出结果，但是会增加查询sql语句，影响查询效率  -->
+		<association property="user" javaType="io.clab.mpf.shop.entity.user.User">
+			<id column="user_id" property="userId" jdbcType="INTEGER" />
+			<result column="openid" property="openid" jdbcType="VARCHAR" />
+			<result column="nickname" property="nickname" jdbcType="VARCHAR" />
+			<result column="headimgurl" property="headimgurl" jdbcType="VARCHAR" />
+			<result column="sex" property="sex" jdbcType="VARCHAR" />
+			<result column="phone" property="phone" jdbcType="VARCHAR" />
+			<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+			<result column="province" property="province" jdbcType="VARCHAR" />
+			<result column="city" property="city" jdbcType="VARCHAR" />
+			<result column="country" property="country" jdbcType="VARCHAR" />
+			<result column="state" property="state" jdbcType="TINYINT" />
+			<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		</association>
+		<association property="payment" javaType="io.clab.mpf.shop.entity.payment.Payment">
+			<id column="payment_id" property="paymentId" jdbcType="INTEGER" />
+			<result column="name" property="name" jdbcType="VARCHAR" />
+		</association>
+		<association property="receive" javaType="io.clab.mpf.shop.entity.receive.Receive">
+			<id column="receive_id" property="receiveId" jdbcType="INTEGER" />
+			<result column="contact" property="contact" jdbcType="VARCHAR" />
+			<result column="tel" property="tel" jdbcType="VARCHAR" />
+			<result column="receive_province" property="receiveProvince"
+				jdbcType="VARCHAR" />
+			<result column="receive_city" property="receiveCity" jdbcType="VARCHAR" />
+			<result column="receive_county" property="receiveCounty"
+				jdbcType="VARCHAR" />
+			<result column="receive_address" property="receiveAddress"
+				jdbcType="VARCHAR" />
+		</association>
+		
+		<collection property="orderDetailsList" select="selectOrderDetailsByOrderId" column="order_id" ></collection> 
+	</resultMap>
+	
+	<resultMap id="BaseUserMap" type="io.clab.mpf.shop.entity.user.User">
+		<id column="user_id" property="userId" jdbcType="INTEGER" />
+		<result column="openid" property="openid" jdbcType="VARCHAR" />
+		<result column="nickname" property="nickname" jdbcType="VARCHAR" />
+		<result column="headimgurl" property="headimgurl" jdbcType="VARCHAR" />
+		<result column="sex" property="sex" jdbcType="VARCHAR" />
+		<result column="phone" property="phone" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="province" property="province" jdbcType="VARCHAR" />
+		<result column="city" property="city" jdbcType="VARCHAR" />
+		<result column="country" property="country" jdbcType="VARCHAR" />
+		<result column="state" property="state" jdbcType="TINYINT" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<resultMap id="BasePaymentMap" type="io.clab.mpf.shop.entity.payment.Payment">
+		<id column="payment_id" property="paymentId" jdbcType="INTEGER" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="BaseOrderDetailsMap" type="io.clab.mpf.shop.entity.order.OrderDetails">
+		<id column="order_details_id" property="orderDetailsId" jdbcType="INTEGER" />
+			<result column="goods_name" property="goodsName" jdbcType="VARCHAR" />
+			<result column="unit_name" property="unitName" jdbcType="VARCHAR" />
+			<result column="unit_price" property="unitPrice" jdbcType="INTEGER" />
+			<result column="num" property="num" jdbcType="INTEGER" />
+			<result column="details_amount" property="detailsAmount"
+				jdbcType="INTEGER" />
+	</resultMap>
+	<resultMap id="BaseReceiveMap" type="io.clab.mpf.shop.entity.receive.Receive">
+			<id column="receive_id" property="receiveId" jdbcType="INTEGER" />
+			<result column="contact" property="contact" jdbcType="VARCHAR" />
+			<result column="tel" property="tel" jdbcType="VARCHAR" />
+			<result column="receive_province" property="receiveProvince"
+				jdbcType="VARCHAR" />
+			<result column="receive_city" property="receiveCity" jdbcType="VARCHAR" />
+			<result column="receive_county" property="receiveCounty"
+				jdbcType="VARCHAR" />
+			<result column="receive_address" property="receiveAddress"
+				jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<!-- 获取user -->
+	<select id="selectUserByUserId" parameterType="int" resultMap="BaseUserMap"> 
+		select * from t_user where user_id = #{userId}
+	</select> 
+	<!-- 获取订单详情 -->
+	<select id="selectOrderDetailsByOrderId" parameterType="int" resultMap="BaseOrderDetailsMap"> 
+		select * from t_order_details
+		where order_id = #{orderId}
+	</select> 
+	<!-- 获取收货地址相关信息 -->
+	<select id="selectReceiveByReceiveId" parameterType="int" resultMap="BaseReceiveMap"> 
+		select * from t_user_receive
+		where receive_id = #{receiveId}
+	</select> 
+	<!-- 获取支付方式 -->
+	<select id="selectPaymentByPaymentId" parameterType="int" resultMap="BasePaymentMap"> 
+		select * from t_payment_method where payment_id = #{paymentId}
+	</select> 
+	<!--以上为导出所用  -->
+	
+	<sql id="Base_Column_List">
+		o.order_id,d.order_details_id,o.order_number,
+		o.total_amount,
+		o.send_time, o.logistics_state,
+		o.invoice_tag,o.del_state,
+		o.payment_seq, o.pay_state, o.comment,
+		o.create_time, o.update_time,
+		d.goods_name, d.unit_name,
+		d.unit_price,d.num,d.details_amount,
+		r.contact,r.tel,r.receive_province,r.receive_city,r.receive_county,r.receive_address
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_order o
+		left join t_order_details d on o.order_id = d.order_id
+		left join t_user_receive r on o.receive_id = r.receive_id
+		where
+		o.order_id = #{id,jdbcType=INTEGER}
+	</select>
+	<sql id="Base_Column">
+		o.order_id,o.order_number, o.total_amount, o.send_time, o.logistics_state,o.total_amount,o.paid_amount,
+		o.invoice_tag,o.del_state, o.payment_seq, o.pay_state, o.comment,
+		o.create_time, o.update_time, u.user_id
+	</sql>
+	<select id="getOrderByNumber" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column" />
+		from t_order o
+		left join t_user u on u.user_id = o.user_id 
+		where order_number = #{orderNumber,jdbcType=VARCHAR}
+	</select>
+	<select id="getAmountByPaystate" resultType="Integer">
+		select sum(paid_amount) 
+		from t_order  
+		where pay_state =#{payState,jdbcType=INTEGER}
+	</select>
+	<select id="getCountByPaystate" resultType="Integer">
+		select count(*)
+		from t_order  
+		where pay_state =#{payState,jdbcType=INTEGER}
+	</select>
+	<resultMap id="BaseMap" type="io.clab.mpf.shop.entity.order.Order">
+		<id column="order_id" property="orderId" jdbcType="INTEGER" />
+		<result column="order_number" property="orderNumber" jdbcType="VARCHAR" />
+		<result column="total_amount" property="totalAmount" jdbcType="INTEGER" />
+		<result column="paid_amount" property="paidAmount" jdbcType="INTEGER" />
+		<result column="discount_amount" property="discountAmount"
+			jdbcType="INTEGER" />
+		<result column="send_time" property="sendTime" jdbcType="TIMESTAMP" />
+		<result column="logistics_state" property="logisticsState"
+			jdbcType="TINYINT" />
+		<result column="invoice_tag" property="invoiceTag" jdbcType="TINYINT" />
+		<result column="payment_seq" property="paymentSeq" jdbcType="VARCHAR" />
+		<result column="pay_state" property="payState" jdbcType="TINYINT" />
+		<result column="del_state" property="delState" jdbcType="TINYINT" />
+		<result column="comment" property="comment" jdbcType="VARCHAR" />
+
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<association property="orderCertify" javaType="io.clab.mpf.shop.entity.order.OrderCertify">
+			<id column="certify_id" property="orderCertifyId" jdbcType="TINYINT" />
+			<result column="order_number" property="orderNumber" jdbcType="VARCHAR" />
+			<result column="image_url" property="imageUrl" jdbcType="VARCHAR" />
+			<result column="create_time" property="orderNumber" jdbcType="VARCHAR" />
+			<result column="update_time" property="orderNumber" jdbcType="VARCHAR" />
+			<association property="admin" javaType="io.clab.mpf.shop.entity.admin.Admin">
+				<id column="admin_id" property="adminId" jdbcType="INTEGER" />
+				<result column="admin_name" property="adminName" jdbcType="VARCHAR" />
+			</association>
+		</association>
+		<association property="user" javaType="io.clab.mpf.shop.entity.user.User">
+			<id column="user_id" property="userId" jdbcType="INTEGER" />
+			<result column="phone" property="phone" jdbcType="VARCHAR" />
+		</association>
+		<association property="payment" javaType="io.clab.mpf.shop.entity.payment.Payment">
+			<id column="payment_id" property="paymentId" jdbcType="INTEGER" />
+			<result column="name" property="name" jdbcType="VARCHAR" />
+		</association>
+		<association property="receive" javaType="io.clab.mpf.shop.entity.receive.Receive">
+			<id column="receive_id" property="receiveId" jdbcType="INTEGER" />
+			<result column="contact" property="contact" jdbcType="VARCHAR" />
+			<result column="tel" property="tel" jdbcType="VARCHAR" />
+			<result column="receive_province" property="receiveProvince"
+				jdbcType="VARCHAR" />
+			<result column="receive_city" property="receiveCity" jdbcType="VARCHAR" />
+			<result column="receive_county" property="receiveCounty"
+				jdbcType="VARCHAR" />
+			<result column="receive_address" property="receiveAddress"
+				jdbcType="VARCHAR" />
+		</association>
+		<collection property="orderDetailsList" ofType="io.clab.mpf.shop.entity.order.OrderDetails">
+			<id column="order_details_id" property="orderDetailsId" jdbcType="INTEGER" />
+			<result column="goods_name" property="goodsName" jdbcType="VARCHAR" />
+			<result column="unit_name" property="unitName" jdbcType="VARCHAR" />
+			<result column="unit_price" property="unitPrice" jdbcType="INTEGER" />
+			<result column="num" property="num" jdbcType="INTEGER" />
+			<result column="details_amount" property="detailsAmount"
+				jdbcType="INTEGER" />
+		</collection>
+	</resultMap>
+	<!-- 订单详情 -->
+	<select id="getOne" parameterType="java.lang.String" resultMap="BaseMap">
+		select
+		o.order_id,d.order_details_id,o.order_number, o.total_amount,
+		o.paid_amount, o.discount_amount,
+		o.send_time, o.logistics_state,
+		o.invoice_tag,
+		o.del_state,
+		o.payment_seq, o.pay_state, o.comment,
+		o.create_time, o.update_time,
+		u.phone as phone,
+		p.name,
+		oc.image_url,
+		d.goods_name, d.unit_name,
+		d.unit_price,d.num,d.details_amount,
+		r.contact,r.tel,r.receive_province,r.receive_city,r.receive_county,r.receive_address,
+		a.admin_name
+		from t_order o
+		left join t_user u on o.user_id = u.user_id
+		left join
+		t_order_details d on o.order_id = d.order_id
+		left join
+		t_user_receive r on o.receive_id = r.receive_id
+		left join
+		t_payment_method p on p.payment_id = o.payment_id
+		left join
+		t_order_certify oc on oc.order_id = o.order_id
+		left join t_admin a on
+		a.admin_id = oc.admin_id
+		where o.order_number=
+		#{oderNumber,jdbcType=INTEGER}
+	</select>
+	   <select id="getPage" parameterType="io.clab.mpf.shop.entity.order.Order"
+                resultMap="BaseResultMap">
+                select
+                o.order_id,
+                o.order_number,o.create_time,o.pay_state,o.total_amount,o.paid_amount,
+                o.logistics_state, o.invoice_tag, o.send_time, u.phone,
+                p.payment_id,
+                p.name
+                from
+                t_order o
+                left join
+                t_user u on o.user_id = u.user_id
+                left
+                join
+                t_payment_method p on p.payment_id = o.payment_id
+                where del_state=2
+                <if test="orderNumber!=null and orderNumber!=''">
+                        and o.order_number = #{orderNumber}
+                </if>
+                <if test="startTime!=null">
+                        and o.create_time > #{startTime}
+                </if>
+                <if test="endTime!=null">
+                        and o.create_time &lt; #{endTime}
+                </if>
+                <if test="userPhone!=null and userPhone!=''">
+                        and u.phone = #{userPhone}
+                </if>
+
+                <if test="invoiceTag!=null">
+                        and o.invoice_tag = #{invoiceTag}
+                </if>
+                <if test="paymentId!=null">
+                        and p.payment_id = #{paymentId}
+                </if>
+                <if test="payState!=null">
+                        and o.pay_state = #{payState}
+                </if>
+                <if test="logisticsState!=null">
+                        and o.logistics_state = #{logisticsState}
+                </if>
+                order by create_time
+                desc
+        </select>
+
+	
+	<!-- 管理平台商品订单搜索导出  -->
+	<select id="getPageExportByOrderAdminSearchVO" parameterType="io.clab.mpf.shop.entity.order.OrderAdminSearchVO"
+		resultMap="BaseExportResultMap">
+		select
+		*
+		from
+		t_order o
+		left join
+		t_user u on o.user_id = u.user_id
+		left
+		join
+		t_payment_method p on p.payment_id = o.payment_id
+		left
+		join
+		t_user_receive q on q.receive_id = o.receive_id
+		where o.del_state=2
+		<if test="orderNumber != null and orderNumber != ''">
+			and o.order_number LIKE #{orderNumber,jdbcType=VARCHAR}
+		</if>
+		<if test="createTime_le != null  and createTime_le != ''">
+			and o.create_time &lt;= #{createTime_le,jdbcType=TIMESTAMP}
+		</if>
+		<if test="createTime_ge != null and createTime_ge != ''">
+			and o.create_time &gt;= #{createTime_ge,jdbcType=TIMESTAMP}
+		</if>
+		<if test="phone != null and phone != ''">
+			and u.phone LIKE #{phone,jdbcType=VARCHAR}
+		</if>
+		<if test="invoiceTag != null and invoiceTag != ''">
+			and o.invoice_tag = #{invoiceTag,jdbcType=TINYINT}
+		</if>
+		<if test="paymentId != null and paymentId != ''">
+			and p.payment_id = #{paymentId,jdbcType=INTEGER}
+		</if>
+		<if test="payState != null and payState != ''">
+			and o.pay_state = #{payState,jdbcType=TINYINT}
+		</if>
+		<if test="logisticsState != null and logisticsState != ''">
+			and o.logistics_state = #{logisticsState,jdbcType=TINYINT}
+		</if>
+		<if test="checkAll == null or checkAll == ''">
+			<if test="selectIdList != null and selectIdList.size() != 0">
+			and o.order_id in 
+			<foreach item="item" index="index" collection="selectIdList" open="("  
+           		separator="," close=")">  
+           		#{item}  
+        	</foreach>  
+			</if>
+		</if>
+		order by o.create_time
+		desc
+	</select>
+	<!-- 管理平台商品订单搜索  -->
+	<select id="getPageByOrderAdminSearchVO" parameterType="io.clab.mpf.shop.entity.order.OrderAdminSearchVO"
+		resultMap="BaseResultMap">
+		select
+		o.order_id,
+		o.order_number,o.create_time,o.pay_state,o.total_amount,o.paid_amount,
+		o.logistics_state, o.invoice_tag, o.send_time, u.phone,
+		p.payment_id,
+		p.name
+		from
+		t_order o
+		left join
+		t_user u on o.user_id = u.user_id
+		left
+		join
+		t_payment_method p on p.payment_id = o.payment_id
+		where del_state=2
+		<if test="orderNumber != null and orderNumber != ''">
+			and o.order_number LIKE #{orderNumber,jdbcType=VARCHAR}
+		</if>
+		<if test="createTime_le != null  and createTime_le != ''">
+			and o.create_time &lt;= #{createTime_le,jdbcType=TIMESTAMP}
+		</if>
+		<if test="createTime_ge != null and createTime_ge != ''">
+			and o.create_time &gt;= #{createTime_ge,jdbcType=TIMESTAMP}
+		</if>
+		<if test="phone != null and phone != ''">
+			and u.phone LIKE #{phone,jdbcType=VARCHAR}
+		</if>
+		<if test="invoiceTag != null and invoiceTag != ''">
+			and o.invoice_tag = #{invoiceTag,jdbcType=TINYINT}
+		</if>
+		<if test="paymentId != null and paymentId != ''">
+			and p.payment_id = #{paymentId,jdbcType=INTEGER}
+		</if>
+		<if test="payState != null and payState != ''">
+			and o.pay_state = #{payState,jdbcType=TINYINT}
+		</if>
+		<if test="logisticsState != null and logisticsState != ''">
+			and o.logistics_state = #{logisticsState,jdbcType=TINYINT}
+		</if>
+		
+		order by o.create_time
+		desc
+	</select>
+	
+	<!-- 前端订单列表 -->
+	<resultMap id="BaseMapPageFront" type="io.clab.mpf.shop.entity.order.Order">
+		<result column="order_number" property="orderNumber" jdbcType="VARCHAR" />
+		<result column="total_amount" property="totalAmount" jdbcType="INTEGER" />
+			<result column="paid_amount" property="paidAmount" jdbcType="INTEGER" />
+		<result column="send_time" property="sendTime" jdbcType="TIMESTAMP" />
+		<result column="logistics_state" property="logisticsState"
+			jdbcType="TINYINT" />
+		<result column="pay_state" property="payState" jdbcType="TINYINT" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="order_number" property="orderNumber" jdbcType="VARCHAR" />
+		<association property="payment" javaType="io.clab.mpf.shop.entity.payment.Payment">
+			<id column="payment_id" property="paymentId" jdbcType="INTEGER" />
+			<result column="name" property="name" jdbcType="VARCHAR" />
+		</association>
+		<collection property="orderDetailsList" ofType="io.clab.mpf.shop.entity.order.OrderDetails">
+			<result column="goods_name" property="goodsName" jdbcType="VARCHAR" />
+			<result column="image" property="image" jdbcType="VARCHAR" />
+		</collection>
+	</resultMap>
+	<sql id="PageFront_Cloum_List">
+		o.order_number,o.paid_amount, o.total_amount,o.send_time,o.logistics_state,o.pay_state,o.create_time,p.name
+	</sql>
+	<select id="getPageFront" parameterType="io.clab.mpf.shop.entity.order.Order"
+		resultMap="BaseMapPageFront">
+		select
+		<include refid="PageFront_Cloum_List" />
+		from t_order o
+		left join
+		t_user u on u.user_id=o.user_id
+		left join t_payment_method p on
+		p.payment_id = o.payment_id
+		where
+		o.del_state=2 and
+		u.user_id=#{user.userId}
+		<if test="payState != null">
+			and pay_state = #{payState,jdbcType=TINYINT}
+		</if>
+		<if test="logisticsState != null">
+			and logistics_state =
+			#{logisticsState,jdbcType=TINYINT}
+		</if>
+		<if test="payment != null">
+			and o.payment_id = #{payment.paymentId,jdbcType=TINYINT}
+		</if>
+		order by o.create_time desc
+	</select>
+	<insert id="insertSelective" parameterType="io.clab.mpf.shop.entity.order.Order" useGeneratedKeys="true" keyProperty="orderId">
+		insert into t_order
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="orderNumber != null">
+				order_number,
+			</if>
+			<if test="user != null">
+				user_id,
+			</if>
+			<if test="totalAmount != null">
+				total_amount,
+			</if>
+			<if test="paidAmount != null">
+				paid_amount,
+			</if>
+			<if test="discountAmount != null">
+				discount_amount,
+			</if>
+			<if test="receive != null">
+				receive_id,
+			</if>
+			<if test="sendTime != null">
+				send_time,
+			</if>
+			<if test="logisticsState != null">
+				logistics_state,
+			</if>
+			<if test="invoiceTag != null">
+				invoice_tag,
+			</if>
+			<if test="comment != null">
+				comment,
+			</if>
+			<if test="delState != null">
+				del_state,
+			</if>
+			<if test="payment != null">
+				payment_id,
+			</if>
+			<if test="paymentSeq != null">
+				payment_seq,
+			</if>
+			<if test="payState != null">
+				pay_state,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="orderNumber != null">
+				#{orderNumber,jdbcType=VARCHAR},
+			</if>
+			<if test="user != null">
+				#{user.userId,jdbcType=INTEGER},
+			</if>
+			<if test="totalAmount != null">
+				#{totalAmount,jdbcType=INTEGER},
+			</if>
+			<if test="paidAmount != null">
+				#{paidAmount,jdbcType=INTEGER},
+			</if>
+			<if test="discountAmount != null">
+				#{discountAmount,jdbcType=INTEGER},
+			</if>
+			<if test="receive != null">
+				#{receive.receiveId,jdbcType=INTEGER},
+			</if>
+			<if test="sendTime != null">
+				#{sendTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="logisticsState != null">
+				#{logisticsState,jdbcType=TINYINT},
+			</if>
+			<if test="invoiceTag != null">
+				#{invoiceTag,jdbcType=TINYINT},
+			</if>
+			<if test="comment != null">
+				#{comment,jdbcType=VARCHAR},
+			</if>
+			<if test="delState != null">
+				#{delState,jdbcType=TINYINT},
+			</if>
+			<if test="payment != null">
+				#{payment.paymentId,jdbcType=INTEGER},
+			</if>
+			<if test="paymentSeq != null">
+				#{paymentSeq,jdbcType=VARCHAR},
+			</if>
+			<if test="payState != null">
+				#{payState,jdbcType=TINYINT},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="io.clab.mpf.shop.entity.order.Order">
+		update t_order
+		<set>
+			<if test="logisticsState != null">
+				logistics_state = #{logisticsState,jdbcType=TINYINT},
+			</if>
+			<if test="paymentSeq != null">
+				payment_seq = #{paymentSeq,jdbcType=VARCHAR},
+			</if>
+			<if test="payState != null">
+				pay_state = #{payState,jdbcType=TINYINT},
+			</if>
+			<if test="delState != null">
+				del_state = #{delState,jdbcType=TINYINT},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP}
+			</if>
+		</set>
+		<if test="orderId!=null">
+			where order_id = #{orderId,jdbcType=INTEGER}
+		</if>
+		<if test="orderNumber!=null">
+			where order_number = #{orderNumber,jdbcType=VARCHAR}
+		</if>
+	</update>
+</mapper>

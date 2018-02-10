@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.clab.mpf.shop.dao.order.OrderDetailsMapper">
+	<resultMap id="BaseResultMap" type="io.clab.mpf.shop.entity.order.OrderDetails">
+		<id column="order_details_id" property="orderDetailsId" jdbcType="INTEGER" />
+		<result column="order_id" property="orderId" jdbcType="INTEGER" />
+		<result column="order_number" property="orderNumber" jdbcType="VARCHAR" />
+		<result column="price_id" property="priceId" jdbcType="INTEGER" />
+		<result column="goods_id" property="goodsId" jdbcType="INTEGER" />
+		<result column="unit_name" property="unitName" jdbcType="VARCHAR" />
+		<result column="goods_name" property="goodsName" jdbcType="VARCHAR" />
+		<result column="unit_price" property="unitPrice" jdbcType="INTEGER" />
+		<result column="num" property="num" jdbcType="INTEGER" />
+		<result column="details_amount" property="detailsAmount"
+			jdbcType="INTEGER" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="image" property="image" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		order_details_id,order_id, order_number, price_id,goods_id, unit_name,goods_name, unit_price, num, details_amount,
+		create_time,image
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_order_details
+		where order_details_id = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="getAllBySelect" resultMap="BaseResultMap" parameterType="io.clab.mpf.shop.entity.order.OrderDetails">
+		select
+		<include refid="Base_Column_List" />
+		from t_order_details
+		where order_number = #{orderNumber,jdbcType=VARCHAR}
+	</select>
+	<insert id="insertBatch">
+		insert into t_order_details (order_id, order_number, price_id, goods_id,
+		unit_name, goods_name, unit_price, num, details_amount,
+		create_time,image ) values
+		<foreach collection="list" item="item" separator=",">
+			(
+			#{item.orderId},
+			#{item.orderNumber},
+			#{item.priceId},
+			#{item.goodsId},
+			#{item.unitName},
+			#{item.goodsName},
+			#{item.unitPrice},
+			#{item.num},
+			#{item.detailsAmount},
+			#{item.createTime},
+			#{item.image}
+			)
+		</foreach>
+	</insert>
+	<insert id="insertSelective" parameterType="io.clab.mpf.shop.entity.order.OrderDetails">
+		insert into t_order_details
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="orderDetailsId != null">
+				order_details_id,
+			</if>
+			<if test="orderNumber != null">
+				order_number,
+			</if>
+			<if test="goodsId != null">
+				goods_id,
+			</if>
+			<if test="goodsName != null">
+				goods_name,
+			</if>
+			<if test="unitPrice != null">
+				unit_price,
+			</if>
+			<if test="num != null">
+				num,
+			</if>
+			<if test="detailsAmount != null">
+				details_amount,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="image != null">
+				image,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="orderDetailsId != null">
+				#{orderDetailsId,jdbcType=INTEGER},
+			</if>
+			<if test="orderNumber != null">
+				#{orderNumber,jdbcType=VARCHAR},
+			</if>
+			<if test="goodsId != null">
+				#{goodsId,jdbcType=INTEGER},
+			</if>
+			<if test="goodsName != null">
+				#{goodsName,jdbcType=VARCHAR},
+			</if>
+			<if test="unitPrice != null">
+				#{unitPrice,jdbcType=INTEGER},
+			</if>
+			<if test="num != null">
+				#{num,jdbcType=INTEGER},
+			</if>
+			<if test="detailsAmount != null">
+				#{detailsAmount,jdbcType=INTEGER},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="image != null">
+				#{image,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="io.clab.mpf.shop.entity.order.OrderDetails">
+		update t_order_details
+		<set>
+			<if test="orderNumber != null">
+				order_number = #{orderNumber,jdbcType=VARCHAR},
+			</if>
+			<if test="goodsId != null">
+				goods_id = #{goodsId,jdbcType=INTEGER},
+			</if>
+			<if test="goodsName != null">
+				goods_name = #{goodsName,jdbcType=VARCHAR},
+			</if>
+			<if test="unitPrice != null">
+				unit_price = #{unitPrice,jdbcType=INTEGER},
+			</if>
+			<if test="num != null">
+				num = #{num,jdbcType=INTEGER},
+			</if>
+			<if test="detailsAmount != null">
+				details_amount = #{detailsAmount,jdbcType=INTEGER},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="image != null">
+				image = #{image,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where order_details_id = #{orderDetailsId,jdbcType=INTEGER}
+	</update>
+
+
+	<select id="getTotalDetailsAmountByOrderDetailsAdminSearchVO" parameterType="io.clab.mpf.shop.entity.order.OrderDetailsAdminSearchVO"
+		resultType="long">
+		select				
+		case when sum(details_amount) is null then 0 else sum(details_amount) end	
+		from t_order_details			
+		where 1=1 
+		<if test="goodsName != null and goodsName !=''">
+			and  goods_name LIKE #{goodsName,jdbcType=VARCHAR}
+		</if>
+		<if test="detailsAmount_le != null  and detailsAmount_le != ''">
+			and details_amount &lt;= #{detailsAmount_le,jdbcType=INTEGER}
+		</if>
+		<if test="detailsAmount_ge != null and detailsAmount_ge != ''">
+			and details_amount &gt;= #{detailsAmount_ge,jdbcType=INTEGER}
+		</if>
+		<if test="num_le != null  and num_le != ''">
+			and num &lt;= #{num_le,jdbcType=INTEGER}
+		</if>
+		<if test="num_ge != null and num_ge != ''">
+			and num &gt;= #{num_ge,jdbcType=INTEGER}
+		</if>
+		<if test="createTime_le != null  and createTime_le != ''">
+			and create_time &lt;= #{createTime_le,jdbcType=TIMESTAMP}
+		</if>
+		<if test="createTime_ge != null and createTime_ge != ''">
+			and create_time &gt;= #{createTime_ge,jdbcType=TIMESTAMP}
+		</if>
+	</select>
+	
+	<select id="getTotalNumAmountByOrderDetailsAdminSearchVO" parameterType="io.clab.mpf.shop.entity.order.OrderDetailsAdminSearchVO"
+		resultType="long">
+		select	
+		case when sum(num) is null then 0 else sum(num)	end
+		from t_order_details			
+		where 1=1 
+		<if test="goodsName != null and goodsName !=''">
+			and  goods_name LIKE #{goodsName,jdbcType=VARCHAR}
+		</if>
+		<if test="detailsAmount_le != null  and detailsAmount_le != ''">
+			and details_amount &lt;= #{detailsAmount_le,jdbcType=INTEGER}
+		</if>
+		<if test="detailsAmount_ge != null and detailsAmount_ge != ''">
+			and details_amount &gt;= #{detailsAmount_ge,jdbcType=INTEGER}
+		</if>
+		<if test="num_le != null  and num_le != ''">
+			and num &lt;= #{num_le,jdbcType=INTEGER}
+		</if>
+		<if test="num_ge != null and num_ge != ''">
+			and num &gt;= #{num_ge,jdbcType=INTEGER}
+		</if>
+		<if test="createTime_le != null  and createTime_le != ''">
+			and create_time &lt;= #{createTime_le,jdbcType=TIMESTAMP}
+		</if>
+		<if test="createTime_ge != null and createTime_ge != ''">
+			and create_time &gt;= #{createTime_ge,jdbcType=TIMESTAMP}
+		</if>
+	</select>
+	
+	<select id="getPageByOrderDetailsAdminSearchVO" parameterType="io.clab.mpf.shop.entity.order.OrderDetailsAdminSearchVO"
+		resultMap="BaseResultMap">
+		select				
+		<include refid="Base_Column_List" />		
+		from t_order_details			
+		where 1=1 
+		<if test="goodsName != null  and goodsName != ''">
+			and  goods_name LIKE #{goodsName,jdbcType=VARCHAR}
+		</if>
+		<if test="detailsAmount_le != null  and detailsAmount_le != ''">
+			and details_amount &lt;= #{detailsAmount_le,jdbcType=INTEGER}
+		</if>
+		<if test="detailsAmount_ge != null and detailsAmount_ge != ''">
+			and details_amount &gt;= #{detailsAmount_ge,jdbcType=INTEGER}
+		</if>
+		<if test="num_le != null  and num_le != ''">
+			and num &lt;= #{num_le,jdbcType=INTEGER}
+		</if>
+		<if test="num_ge != null and num_ge != ''">
+			and num &gt;= #{num_ge,jdbcType=INTEGER}
+		</if>
+		<if test="createTime_le != null  and createTime_le != ''">
+			and create_time &lt;= #{createTime_le,jdbcType=TIMESTAMP}
+		</if>
+		<if test="createTime_ge != null and createTime_ge != ''">
+			and create_time &gt;= #{createTime_ge,jdbcType=TIMESTAMP}
+		</if>
+		order by create_time desc
+	</select>
+	
+	<select id="getDetailReportByOrderDetailsAdminSearchVO" parameterType="io.clab.mpf.shop.entity.order.OrderDetailsAdminSearchVO"
+		resultMap="BaseResultMap">		
+		select t.price_id price_id,t.unit_name unit_name,t.goods_name goods_name,
+		case when sum(t.num) is null then 0  else sum(t.num) end as num,
+		case when sum(t.details_amount) is null then 0 else sum(t.details_amount) end as details_amount,
+		left(t.create_time,10) as create_time 
+		from  t_order_details t 
+		where t.price_id = #{goodsName,jdbcType=INTEGER} 
+		<if test="createTime_le != null  and createTime_le != ''">
+			and create_time &lt;= #{createTime_le,jdbcType=TIMESTAMP}
+		</if>
+		<if test="createTime_ge != null and createTime_ge != ''">
+			and create_time &gt;= #{createTime_ge,jdbcType=TIMESTAMP}
+		</if>
+		group by t.price_id, left(t.create_time,10)
+		order by left(t.create_time,10) asc
+	</select>
+	
+	
+</mapper>

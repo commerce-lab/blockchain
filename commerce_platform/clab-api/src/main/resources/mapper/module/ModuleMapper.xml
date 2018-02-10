@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.clab.mpf.shop.dao.module.ModuleMapper">
+	<resultMap id="BaseResultMap" type="io.clab.mpf.shop.entity.module.Module">
+		<id column="module_id" property="moduleId" jdbcType="INTEGER" />
+		<result column="parent_id" property="parentId" jdbcType="INTEGER" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="url" property="url" jdbcType="VARCHAR" />
+		<result column="description" property="description" jdbcType="VARCHAR" />
+		<result column="state" property="state" jdbcType="TINYINT" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		module_id, parent_id, name, url, description, state,
+		create_time, update_time
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_module
+		where module_id = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="selectByRoleId" parameterType="io.clab.mpf.shop.dao.module.ModuleMapper"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_module where state = 1 and
+		module_id in
+		(select module_id from
+		t_role_module where role_id =
+		#{roleId,jdbcType=INTEGER})
+	</select>
+
+	<select id="getAllBySelect" parameterType="io.clab.mpf.shop.entity.module.Module"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_module
+		where state = #{state, jdbcType=TINYINT}
+		order by
+		parent_id
+	</select>
+	<sql id="Base_List">
+		m.module_id, m.parent_id, m.name, m.url
+	</sql>
+	<select id="queryModulesByAdminId" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_List" />
+		from t_module m
+		left join t_role_module rm on rm.module_id = m.module_id
+		left join t_admin_role ar on ar.role_id = rm.role_id
+		left join t_admin a on a.role_id = ar.role_id
+		where ar.state = 1 and m.state = 1 
+		and a.admin_id = #{adminId, jdbcType=TINYINT}
+		order by
+		parent_id
+	</select>
+</mapper>

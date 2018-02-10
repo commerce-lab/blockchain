@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.clab.mpf.shop.dao.shoppingcart.ShoppingCartMapper">
+	<resultMap id="BaseResultMap" type="io.clab.mpf.shop.entity.shoppingcart.ShoppingCart">
+		<id column="cart_id" property="cartId" jdbcType="INTEGER" />
+		<result column="user_id" property="userId" jdbcType="INTEGER" />
+		<result column="price_id" property="priceId" jdbcType="INTEGER" />
+		<result column="goods_id" property="goodsId" jdbcType="INTEGER" />
+		<result column="quantity" property="quantity" jdbcType="INTEGER" />
+		<result column="is_buy" property="isBuy" jdbcType="TINYINT" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		cart_id, user_id, price_id,goods_id,quantity,
+		is_buy,create_time, update_time
+	</sql>
+	<insert id="insertSelective" parameterType="io.clab.mpf.shop.entity.shoppingcart.ShoppingCart">
+		insert into t_cart
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="cartId != null">
+				cart_id,
+			</if>
+			<if test="userId != null">
+				user_id,
+			</if>
+			<if test="priceId != null">
+				price_id,
+			</if>
+			<if test="goodsId != null">
+				goods_id,
+			</if>
+			<if test="quantity != null">
+				quantity,
+			</if>
+			<if test="isBuy != null">
+				is_buy,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="cartId != null">
+				#{cartId,jdbcType=INTEGER},
+			</if>
+			<if test="userId != null">
+				#{userId,jdbcType=INTEGER},
+			</if>
+			<if test="priceId != null">
+				#{priceId,jdbcType=INTEGER},
+			</if>
+			<if test="goodsId != null">
+				#{goodsId,jdbcType=INTEGER},
+			</if>
+			<if test="quantity != null">
+				#{quantity,jdbcType=INTEGER},
+			</if>
+			<if test="isBuy != null">
+				#{isBuy,jdbcType=TINYINT},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="io.clab.mpf.shop.entity.shoppingcart.ShoppingCart">
+		update t_cart
+		<set>
+			<if test="cartId != null">
+				cart_id = #{cartId,jdbcType=INTEGER},
+			</if>
+			<if test="userId != null">
+				user_id = #{userId,jdbcType=INTEGER},
+			</if>
+			<if test="priceId != null">
+				price_id = #{priceId,jdbcType=INTEGER},
+			</if>
+			<if test="goodsId != null">
+				goods_id = #{goodsId,jdbcType=INTEGER},
+			</if>
+			<if test="quantity != null">
+				quantity = #{quantity,jdbcType=INTEGER},
+			</if>
+			<if test="isBuy != null">
+				is_buy = #{isBuy,jdbcType=TINYINT},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				update_time =#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where user_id = #{userId,jdbcType=INTEGER}
+		and price_id =
+		#{priceId,jdbcType=INTEGER}
+	</update>
+	
+	<delete id="delete" parameterType="io.clab.mpf.shop.entity.shoppingcart.ShoppingCart">
+		delete from t_cart where
+		cart_id=#{cartId,jdbcType=INTEGER}
+	</delete>
+	<delete id="delAllNotIsBuyShoppingCartByUserId" parameterType="io.clab.mpf.shop.entity.shoppingcart.ShoppingCart">
+		delete from t_cart
+		where user_id=#{userId,jdbcType=INTEGER}
+		and is_buy
+		&lt;&gt;
+		#{isBuy,jdbcType=TINYINT}
+	</delete>
+	<delete id="delAllShoppingCartByUserIdAndPriceIds" parameterType="io.clab.mpf.shop.entity.shoppingcart.ShoppingCart">
+		delete from t_cart
+		where user_id=#{userId,jdbcType=INTEGER}
+		and price_id In #{priceIds}
+	</delete>
+
+	<select id="queryShoppingCartByUserIdAndPriceId" parameterType="io.clab.mpf.shop.entity.shoppingcart.ShoppingCart"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_cart
+		where user_id=#{userId,jdbcType=INTEGER}
+		and
+		price_id=#{priceId,jdbcType=INTEGER}
+	</select>
+
+	<select id="queryCountGoodsByUserIdAndGoodsId" parameterType="io.clab.mpf.shop.entity.shoppingcart.ShoppingCart"
+		resultType="java.lang.Integer">
+		select count(*)
+		from t_cart
+		where
+		user_id=#{userId,jdbcType=INTEGER}
+		and
+		goods_id=#{goodsId,jdbcType=INTEGER}
+	</select>
+
+	<select id="queryAllNotIsBuyShoppingCartByUserId" parameterType="io.clab.mpf.shop.entity.shoppingcart.ShoppingCart"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_cart
+		where user_id=#{userId,jdbcType=INTEGER}
+		and is_buy &lt;&gt;
+		#{isBuy,jdbcType=TINYINT}
+	</select>
+	<resultMap id="BaseMap" type="io.clab.mpf.shop.entity.shoppingcart.ShoppingCartItem">
+		<id column="cart_id" property="cartId" jdbcType="INTEGER" />
+		<result column="user_id" property="userId" jdbcType="INTEGER" />
+		<result column="quantity" property="quantity" jdbcType="INTEGER" />
+		<result column="is_buy" property="isBuy" jdbcType="TINYINT" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<association property="goodsPrice"
+			javaType="io.clab.mpf.shop.entity.goodsprice.GoodsPrice">
+			<id column="price_id" property="priceId" jdbcType="INTEGER" />
+			<result column="unit_name" property="unitName" jdbcType="VARCHAR" />
+			<result column="retail_price" property="retailPrice" jdbcType="INTEGER" />
+			<result column="buy_price" property="buyPrice" jdbcType="INTEGER" />
+			<result column="wholesale_price" property="wholesalePrice"
+				jdbcType="INTEGER" />
+		</association>
+		<association property="goods" javaType="io.clab.mpf.shop.entity.goods.Goods">
+			<id column="goods_id" property="goodsId" jdbcType="INTEGER" />
+			<!--新增 商品类别 -->
+			<id column="category_id" property="categoryId" jdbcType="INTEGER" />
+			<result column="goods_name" property="goodsName" jdbcType="VARCHAR" />
+			<!--新增 别名 -->
+			<result column="nickname" property="nickName" jdbcType="VARCHAR" />
+			<result column="image" property="image" jdbcType="VARCHAR" />
+		</association>
+	</resultMap>
+	<sql id="Base_Map_List">
+		c.cart_id, c.user_id, c.quantity, c.is_buy, c.create_time, c.update_time,
+		p.price_id,p.unit_name, p.retail_price, p.buy_price, p.wholesale_price,
+		g.goods_id,g.category_id, g.goods_name, g.nickname, g.image
+	</sql>
+	<select id="queryBuyShopCartItemByUserId" parameterType="io.clab.mpf.shop.entity.shoppingcart.ShoppingCartItem"
+		resultMap="BaseMap">
+		select
+		<include refid="Base_Map_List" />
+		from t_cart c
+		left join t_goods_price p on c.price_id = p.price_id
+		left
+		join t_goods g on g.goods_id = c.goods_id
+		where
+		c.user_id=#{userId,jdbcType=INTEGER}
+		and is_buy = 1
+	</select>
+
+	<resultMap id="BaseShoppingCartDetailVOMap" type="io.clab.mpf.shop.entity.shoppingcart.ShoppingCartDetailVO">
+		<id column="price_id" property="priceId" jdbcType="INTEGER" />
+		<result column="goods_id" property="goodsId" jdbcType="INTEGER" />
+		<result column="goods_name" property="goodsName" jdbcType="VARCHAR" />
+		<result column="image" property="image" jdbcType="VARCHAR" />
+		<result column="unit_name" property="uniteName" jdbcType="VARCHAR" />
+		<result column="retail_price" property="retailPrice" jdbcType="INTEGER" />
+		<result column="buy_price" property="buyPrice" jdbcType="INTEGER" />
+		<result column="wholesale_price" property="wholesalePrice" jdbcType="INTEGER" />
+		<result column="cart_id" property="cartId" jdbcType="INTEGER" />
+		<result column="quantity" property="quantity" jdbcType="INTEGER" />
+		<result column="is_buy" property="isBuy" jdbcType="TINYINT" />
+	</resultMap>
+	<select id="queryShoppingCartDetailVOByUserId" parameterType="java.lang.Integer"
+		resultMap="BaseShoppingCartDetailVOMap">
+		select  
+			c.goods_id goods_id,c.goods_name goods_name,c.image image,
+			b.price_id price_id,b.unit_name unit_name,b.retail_price retail_price,b.buy_price buy_price,b.wholesale_price wholesale_price,
+			a.cart_id cart_id,a.quantity quantity,a.is_buy is_buy
+		from sxsc.t_cart as a join sxsc.t_goods_price as b on a.price_id= b.price_id 
+		join sxsc.t_goods as c on b.goods_id= c.goods_id  
+		where a.user_id= #{userId,jdbcType=INTEGER}
+	</select>
+
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_cart
+		where cart_id = #{id,jdbcType=INTEGER}
+	</select>
+
+	<update id="updateAllIsBuyStateByUserIdAndisBuyValue" parameterType="io.clab.mpf.shop.entity.shoppingcart.ShoppingCart">
+		update t_cart
+		<set>			
+			<if test="isBuy != null">
+				is_buy = #{isBuy,jdbcType=TINYINT},
+			</if>			
+		</set>
+		where user_id = #{userId,jdbcType=INTEGER}
+	</update>
+	
+</mapper>

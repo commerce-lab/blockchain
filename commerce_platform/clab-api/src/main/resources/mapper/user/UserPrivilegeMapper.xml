@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.clab.mpf.shop.dao.user.UserPrivilegeMapper">
+	<resultMap id="BaseResultMap" type="io.clab.mpf.shop.entity.user.UserPrivilege">
+		<id column="privilege_id" property="privilegeId" jdbcType="INTEGER" />
+		<result column="user_id" property="userId" jdbcType="INTEGER" />
+		<result column="is_wholeSalePrice" property="isWholeSalePrice"
+			jdbcType="TINYINT" />
+		<result column="isDiscount" property="isDiscount" jdbcType="TINYINT" />
+		<result column="discount" property="discount" jdbcType="INTEGER" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="state" property="state" jdbcType="TINYINT" />
+		<result column="admin_id" property="adminId" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		privilege_id, user_id, is_wholeSalePrice, isDiscount,
+		discount, create_time, update_time, admin_id
+	</sql>
+	<select id="selectByUserId" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_privilege
+		where user_id = #{userId,jdbcType=INTEGER}
+		and state = 2
+	</select>
+	<select id="selectAllByUserId" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_privilege
+		where user_id = #{userId,jdbcType=INTEGER}
+	</select>
+	<insert id="insertSelective" parameterType="io.clab.mpf.shop.entity.user.UserPrivilege">
+		insert into t_privilege
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="userId != null">
+				user_id,
+			</if>
+			<if test="isWholeSalePrice != null">
+				is_wholeSalePrice,
+			</if>
+			<if test="isDiscount != null">
+				isDiscount,
+			</if>
+			<if test="discount != null">
+				discount,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+			<if test="state != null">
+				state,
+			</if>
+			<if test="adminId != null">
+				admin_id
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="userId != null">
+				#{userId,jdbcType=INTEGER},
+			</if>
+			<if test="isWholeSalePrice != null">
+				#{isWholeSalePrice,jdbcType=TINYINT},
+			</if>
+			<if test="isDiscount != null">
+				#{isDiscount,jdbcType=TINYINT},
+			</if>
+			<if test="discount != null">
+				#{discount,jdbcType=INTEGER},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="state != null">
+				#{state,jdbcType=TINYINT},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="adminId != null">
+				#{adminId,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="io.clab.mpf.shop.entity.user.UserPrivilege">
+		update t_privilege
+		<set>
+			<if test="userId != null">
+				user_id = #{userId,jdbcType=INTEGER},
+			</if>
+			<if test="isWholeSalePrice != null">
+				is_wholeSalePrice = #{isWholeSalePrice,jdbcType=TINYINT},
+			</if>
+			<if test="isDiscount != null">
+				isDiscount = #{isDiscount,jdbcType=TINYINT},
+			</if>
+			<if test="discount != null">
+				discount = #{discount,jdbcType=INTEGER},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="state != null">
+				state = #{state,jdbcType=TINYINT},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="adminId != null">
+				admin_id = #{adminId,jdbcType=INTEGER},
+			</if>
+		</set>
+		where privilege_id = #{privilegeId,jdbcType=INTEGER}
+	</update>
+</mapper>

@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.clab.mpf.shop.business.repository.merchants.MerchantsMapper">
+	<resultMap id="BaseResultMap" type="io.clab.mpf.shop.business.entity.merchants.Merchants">
+		<id column="merchants_id" property="merchantsId" jdbcType="INTEGER" />
+		<result column="merchants_name" property="merchantsName" jdbcType="VARCHAR" />
+		<result column="merchants_type" property="merchantsType" jdbcType="INTEGER" />
+		<result column="contact_name" property="contactName" jdbcType="VARCHAR" />
+		<result column="contact_phone" property="contactPhone" jdbcType="VARCHAR" />
+		<result column="contact_email" property="contactEmail" jdbcType="VARCHAR" />
+		<result column="password" property="password" jdbcType="VARCHAR" />
+		<result column="store_area" property="storeArea" jdbcType="INTEGER" />
+		<result column="store_province" property="storeProvince" jdbcType="INTEGER" />
+		<result column="store_city" property="storeCity" jdbcType="INTEGER" />
+		<result column="store_county" property="storeCounty" jdbcType="INTEGER" />
+		<result column="store_adress" property="storeAdress" jdbcType="VARCHAR" />
+		<result column="bus_scope" property="busScope" jdbcType="VARCHAR" />
+		<result column="description" property="description" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+<result column="state" property="state" jdbcType="INTEGER" />
+	</resultMap>
+
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		*
+		from t_merchants a
+		where
+		a.merchants_id = #{merchantsId,jdbcType=INTEGER}
+	</select>
+	<select id="getOne" resultMap="BaseResultMap" parameterType="io.clab.mpf.shop.business.entity.merchants.Merchants">
+		select
+		*
+		from t_merchants a
+		where 1 !=1
+		<if test="contactEmail != null">
+			or contact_email = #{contactEmail, jdbcType=VARCHAR}
+		</if>
+		<if test="contactPhone != null">
+			or contact_phone = #{contactPhone, jdbcType=INTEGER}
+		</if>
+	</select>
+	<select id="longin" resultMap="BaseResultMap" parameterType="io.clab.mpf.shop.business.entity.merchants.Merchants">
+		select
+		*
+		from t_merchants a
+		where 1 !=1 
+		<if test="contactEmail != null">
+			or contact_email = #{contactEmail, jdbcType=VARCHAR}
+		</if>
+		<if test="contactPhone != null">
+			or contact_phone = #{contactPhone, jdbcType=INTEGER}
+		</if>
+		<if test="merchantsName != null">
+			or merchants_name = #{merchantsName, jdbcType=VARCHAR}
+		</if>
+	</select>
+	<select id="getPage" parameterType="io.clab.mpf.shop.business.entity.merchants.Merchants"
+		resultMap="BaseResultMap">
+		select
+		*
+		from t_merchants a
+		order
+		by a.create_time desc
+	</select>
+	<select id="getCount" parameterType="io.clab.mpf.shop.business.entity.merchants.Merchants"
+		resultType="java.lang.Integer">
+		select count(*)
+		from t_merchants
+		where 1=1
+		<if test="state != null">
+			and state = #{state, jdbcType=INTEGER}
+		</if>
+	</select>
+	<insert id="insertSelective" parameterType="io.clab.mpf.shop.business.entity.merchants.Merchants">
+		insert into t_merchants
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test=" merchantsId != null">
+				merchants_id,
+			</if>
+			<if test=" merchantsName != null">
+				merchants_name,
+			</if>
+			<if test=" merchantsType != null">
+				merchants_type,
+			</if>
+			<if test=" contactName != null">
+				contact_name,
+			</if>
+			<if test=" contactPhone != null">
+				contact_phone,
+			</if>
+			<if test=" contactEmail != null">
+				contact_email,
+			</if>
+			<if test=" password != null">
+				password,
+			</if>
+			<if test=" storeArea != null">
+				store_area,
+			</if>
+			<if test=" storeProvince != null">
+				store_province,
+			</if>
+			<if test=" storeCity != null">
+				store_city,
+			</if>
+			<if test=" storeCounty != null">
+				store_county,
+			</if>
+			<if test=" storeAdress != null">
+				store_adress,
+			</if>
+			<if test=" description != null">
+				description,
+			</if>
+			<if test=" state != null">
+				state,
+			</if>
+			
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test=" merchantsId != null">
+				#{merchantsId,jdbcType=INTEGER},
+			</if>
+			<if test=" merchantsName != null">
+				#{merchantsName,jdbcType=VARCHAR},
+			</if>
+			<if test=" merchantsType != null">
+				#{merchantsType,jdbcType=INTEGER},
+			</if>
+			<if test=" contactName != null">
+				#{contactName,jdbcType=VARCHAR},
+			</if>
+			<if test=" contactPhone != null">
+				#{contactPhone,jdbcType=VARCHAR},
+			</if>
+			<if test=" contactEmail != null">
+				#{contactEmail,jdbcType=VARCHAR},
+			</if>
+			<if test=" password != null">
+				#{password,jdbcType=VARCHAR},
+			</if>
+			<if test=" storeArea != null">
+				#{storeArea,jdbcType=INTEGER},
+			</if>
+			<if test=" storeProvince != null">
+				#{storeProvince,jdbcType=INTEGER},
+			</if>
+			<if test=" storeCity != null">
+				#{storeCity,jdbcType=INTEGER},
+			</if>
+			<if test=" storeCounty != null">
+				#{storeCounty,jdbcType=INTEGER},
+			</if>
+			<if test=" storeAdress != null">
+				#{storeAdress,jdbcType=VARCHAR},
+			</if>
+			<if test=" description != null">
+				#{description,jdbcType=VARCHAR},
+			</if>
+			<if test=" state != null">
+				#{state,jdbcType=INTEGER},
+			</if>
+			
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="io.clab.mpf.shop.business.entity.merchants.Merchants">
+		update t_merchants
+		<set>
+			<if test=" merchantsName != null">
+				merchants_name = #{merchantsName,jdbcType=VARCHAR},
+			</if>
+			<if test=" merchantsType != null">
+				merchants_type = #{merchantsType,jdbcType=VARCHAR},
+			</if>
+			<if test=" contactName != null">
+				contact_name = #{contactName,jdbcType=VARCHAR},
+			</if>
+			<if test=" contactPhone != null">
+				contact_phone = #{contactPhone,jdbcType=VARCHAR},
+			</if>
+			<if test=" contactEmail != null">
+				contact_email = #{contactEmail,jdbcType=VARCHAR},
+			</if>
+			<if test=" password != null">
+				password = #{password,jdbcType=VARCHAR},
+			</if>
+			<if test=" storeArea != null">
+				store_area = #{storeArea,jdbcType=INTEGER},
+			</if>
+			<if test=" storeProvince != null">
+				store_province = #{storeProvince,jdbcType=INTEGER},
+			</if>
+			<if test=" storeCity != null">
+				store_city = #{storeCity,jdbcType=INTEGER},
+			</if>
+			<if test=" storeCounty != null">
+				store_county = #{storeCounty,jdbcType=INTEGER},
+			</if>
+			<if test=" storeAdress != null">
+				store_adress = #{storeAdress,jdbcType=VARCHAR},
+			</if>
+			<if test=" description != null">
+				description = #{description,jdbcType=VARCHAR},
+			</if>
+			<if test=" state != null">
+				state = #{state,jdbcType=INTEGER},
+			</if>
+		</set>
+		where merchants_id = #{merchantsId,jdbcType=INTEGER}
+	</update>
+</mapper>

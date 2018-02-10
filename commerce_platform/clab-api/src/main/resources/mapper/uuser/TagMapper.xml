@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.clab.mpf.shop.business.repository.uuser.TagMapper">
+	<resultMap id="BaseResultMap" type="io.clab.mpf.shop.business.entity.uuser.Tag">
+		<id column="tag_id" property="tagId" jdbcType="INTEGER" />
+		<result column="tag_name" property="tagName" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<insert id="insertSelectiveEntity" useGeneratedKeys="true" keyProperty="tagId" parameterType="io.clab.mpf.shop.business.entity.uuser.DiUuser">
+		insert into t_tag(tag_name) 
+		values 
+		(#{tagName,jdbcType=VARCHAR})
+	</insert>
+	
+	<select id="selectByTagName" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		*
+		from t_tag a
+		where
+		a.tag_name = #{tagName,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="selectLikeTagNameList" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		*
+		from t_tag a
+		where
+		a.tag_name like CONCAT(CONCAT('%', #{tagName,jdbcType=VARCHAR}), '%')
+	</select>
+	
+	<select id="selectByCategoryList" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select * from t_tag where tag_id in (
+			select tag_id from t_di_tag where merchants_id in (
+				select merchants_id from t_merchants_category where category_id in (
+					select category_id from t_category where FIND_IN_SET(category_id, category_child_lst(#{categoryId,jdbcType=INTEGER}))
+					)
+				)
+			)   
+	</select>
+	
+	
+
+</mapper>

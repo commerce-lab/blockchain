@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.clab.mpf.shop.dao.message.IMessageMapper">
+	<resultMap id="BaseResultMap" type="io.clab.mpf.shop.entity.message.Message">
+		<id column="message_id" property="messageId" jdbcType="INTEGER" />
+		<result column="message_title" property="messageTitle"
+			jdbcType="VARCHAR" />
+		<result column="push" property="push" jdbcType="TINYINT" />
+		<result column="push_time" property="pushTime" jdbcType="TIMESTAMP" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="del_state" property="delState" jdbcType="TINYINT" />
+		<result column="admin_id" property="adminId" jdbcType="INTEGER" />
+		<result column="message_short_context" property="messageShortContext"
+			jdbcType="VARCHAR" />
+		<result column="message_context" property="messageContext"
+			jdbcType="VARCHAR" />
+		<result column="url" property="url" jdbcType="VARCHAR" />
+		<result column="user_ids" property="userIds" jdbcType="VARCHAR" />
+		<result column="is_all" property="isAll" jdbcType="TINYINT" />
+		<result column="push_now" property="pushNow" jdbcType="TINYINT" />
+	</resultMap>
+	<resultMap id="ResultMapWithBLOBs" type="io.clab.mpf.shop.entity.message.Message"
+		extends="BaseResultMap">
+		<result column="message_context" property="messageContext"
+			jdbcType="LONGVARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		message_id, message_title, push, push_time, create_time,
+		update_time, del_state,
+		admin_id,message_short_context,
+		message_context,url,user_ids,is_all,push_now
+	</sql>
+	<select id="getOneById" resultMap="ResultMapWithBLOBs"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_message
+		where message_id = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_message
+		where message_id = #{id,jdbcType=INTEGER}
+	</select>
+	<insert id="insert" parameterType="io.clab.mpf.shop.entity.message.Message"
+		useGeneratedKeys="true" keyProperty="messageId">
+		insert into t_message
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="messageId != null">
+				message_id,
+			</if>
+			<if test="messageTitle != null">
+				message_title,
+			</if>
+			<if test="push != null">
+				push,
+			</if>
+			<if test="pushNow != null">
+				push_now,
+			</if>
+			<if test="pushTime != null">
+				push_time,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+			<if test="delState != null">
+				del_state,
+			</if>
+			<if test="adminId != null">
+				admin_id,
+			</if>
+			<if test="messageContext != null">
+				message_context,
+			</if>
+			<if test="messageShortContext != null">
+				message_short_context,
+			</if>
+			<if test="url != null">
+				url,
+			</if>
+			<if test="userIds != null">
+				user_ids,
+			</if>
+			<if test="isAll != null">
+				is_all,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="messageId != null">
+				#{messageId,jdbcType=INTEGER},
+			</if>
+			<if test="messageTitle != null">
+				#{messageTitle,jdbcType=VARCHAR},
+			</if>
+			<if test="push != null">
+				#{push,jdbcType=TINYINT},
+			</if>
+			<if test="pushNow != null">
+				#{pushNow,jdbcType=TINYINT},
+			</if>
+			<if test="pushTime != null">
+				#{pushTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="delState != null">
+				#{delState,jdbcType=TINYINT},
+			</if>
+			<if test="adminId != null">
+				#{adminId,jdbcType=INTEGER},
+			</if>
+			<if test="messageContext != null">
+				#{messageContext,jdbcType=LONGVARCHAR},
+			</if>
+			<if test="messageShortContext != null">
+				#{messageShortContext,jdbcType=VARCHAR},
+			</if>
+			<if test="url != null">
+				#{url,jdbcType=VARCHAR},
+			</if>
+			<if test="userIds != null">
+				#{userIds,jdbcType=VARCHAR},
+			</if>
+			<if test="isAll != null">
+				#{isAll,jdbcType=TINYINT},
+			</if>
+		</trim>
+	</insert>
+	<update id="update" parameterType="io.clab.mpf.shop.entity.message.Message">
+		update t_message
+		<set>
+			<if test="messageTitle != null">
+				message_title = #{messageTitle,jdbcType=VARCHAR},
+			</if>
+			<if test="push != null">
+				push = #{push,jdbcType=TINYINT},
+			</if>
+			<if test="pushNow != null">
+				push_now=#{pushNow,jdbcType=TINYINT},
+			</if>
+			<if test="pushTime != null">
+				push_time = #{pushTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="delState != null">
+				del_state = #{delState,jdbcType=TINYINT},
+			</if>
+			<if test="adminId != null">
+				admin_id = #{adminId,jdbcType=INTEGER},
+			</if>
+			<if test="messageContext != null">
+				message_context = #{messageContext,jdbcType=LONGVARCHAR},
+			</if>
+			<if test="messageShortContext != null">
+				message_short_context =
+				#{messageShortContext,jdbcType=VARCHAR},
+			</if>
+			<if test="userIds != null">
+				user_ids=#{userIds,jdbcType=VARCHAR},
+			</if>
+			<if test="isAll != null">
+				is_all= #{isAll,jdbcType=TINYINT},
+			</if>
+		</set>
+		where message_id = #{messageId,jdbcType=INTEGER}
+	</update>
+	<!-- 获取最新动态的消息 -->
+	<select id="getMessageLevel" resultMap="pageMap"
+		resultType="io.clab.mpf.shop.entity.message.Message">
+		select
+		m.message_title,m.message_short_context,m.message_context,m.url,m.message_id,m.push_time,um.user_message_id,m.push_now
+		from t_message m
+		left join t_user_message um
+		on
+		m.message_id=um.message_id
+		where m.del_state=2 and m.push=1 and
+		um.user_id=#{userId}
+		order by push_time desc
+		limit 5
+	</select>
+	<!-- 分页查询消息列表 -->
+	<resultMap id="pageMap" type="io.clab.mpf.shop.entity.message.Message">
+		<id column="message_id" property="messageId" jdbcType="INTEGER" />
+		<result column="message_title" property="messageTitle"
+			jdbcType="VARCHAR" />
+		<result column="message_short_context" property="messageShortContext"
+			jdbcType="VARCHAR" />
+		<result column="message_context" property="messageContext"
+			jdbcType="VARCHAR" />
+		<result column="url" property="url" jdbcType="VARCHAR" />
+		<result column="push_time" property="pushTime" jdbcType="TIMESTAMP" />
+		<result column="push_now" property="pushNow" jdbcType="TINYINT" />
+		<result column="user_message_id" property="userMessageId"
+			jdbcType="INTEGER" />
+		<result column="is_all" property="isAll" jdbcType="TINYINT" />
+	</resultMap>
+	<select id="getPageFront" resultMap="pageMap"
+		resultType="io.clab.mpf.shop.entity.message.Message">
+		select
+		m.message_title,m.message_short_context,m.message_context,m.message_id,m.push_time,um.user_message_id,m.push_now, m.url
+		from t_message m
+		left join t_user_message um
+		on
+		m.message_id=um.message_id
+		where m.del_state=2 and um.user_id=#{userId}
+		<if test="state!=null">
+			and um.state=#{state}
+		</if>
+		ORDER BY m.push_time desc
+	</select>
+	<select id="getPage" resultMap="pageMap" resultType="io.clab.mpf.shop.entity.message.Message">
+		select
+		m.message_title,m.message_short_context,m.message_id,m.push_time,m.push,m.is_all,m.push_now
+		from t_message m
+		where m.del_state=2
+		<if test="adminId!=null">
+			and m.admin_id=#{adminId}
+		</if>
+		ORDER BY m.create_time desc,m.push_time desc
+	</select>
+</mapper>

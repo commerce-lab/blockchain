@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.clab.mpf.shop.dao.payment.PaymentMapper">
+	<resultMap id="BaseResultMap" type="io.clab.mpf.shop.entity.payment.Payment">
+		<id column="payment_id" property="paymentId" jdbcType="INTEGER" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="description" property="description" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="state" property="state" jdbcType="TINYINT" />
+		<result column="isGeneral" property="isGeneral" jdbcType="TINYINT" />
+		
+	</resultMap>
+	<sql id="Base_Column_List">
+		payment_id, name, description, create_time, update_time,isGeneral,state
+	</sql>
+	<select id="queryUserPayment" parameterType="io.clab.mpf.shop.entity.payment.Payment"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_payment_method
+		where state=2 and isGeneral = 1
+		union
+		(select
+		<include refid="Base_Column_List" />
+		from t_payment_method where state = 2 and isGeneral != 1 and
+		payment_id in
+		(select payment_id from t_user_payment where user_id =
+		#{userId,jdbcType=INTEGER})
+		)
+	</select>  
+	<select id="queryPayment" parameterType="io.clab.mpf.shop.entity.payment.Payment"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_payment_method
+		where state=2 and isGeneral = 0
+	</select>
+	<select id="getAllBySelect" parameterType="io.clab.mpf.shop.entity.payment.Payment"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_payment_method
+		where state=2 and isGeneral = 0
+	</select>
+</mapper>
