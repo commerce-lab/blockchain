@@ -9,7 +9,8 @@ package io.clab.mpf.shop.consumer.constant;
  */
 public enum RespCode {
 	
-	SUCCESS("0","成功"),GET_TOKEN_ERROR("1","token生成失败"),VALIDATE_ERROR("2","校验失败");
+	SUCCESS("0","成功"),GET_TOKEN_ERROR("1","token生成失败"),VALIDATE_ERROR("2","校验失败"),
+	PARAM_ERROR("3","参数不完整"),ERROR("4","操作失败");
 
 	private String code;
 	

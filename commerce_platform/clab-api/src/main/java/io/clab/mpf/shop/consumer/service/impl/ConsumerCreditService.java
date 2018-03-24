@@ -14,15 +14,15 @@ import com.baomidou.mybatisplus.plugins.Page;
 
 import io.clab.mpf.shop.consumer.constant.CreditChannelEnum;
 import io.clab.mpf.shop.consumer.constant.CreditHisRangeEnum;
-import io.clab.mpf.shop.consumer.entity.ConsumerCredit;
-import io.clab.mpf.shop.consumer.entity.ConsumerCreditDetail;
-import io.clab.mpf.shop.consumer.repository.ConsumerCreditDetailMapper;
-import io.clab.mpf.shop.consumer.repository.ConsumerCreditMapper;
+import io.clab.mpf.shop.consumer.entity.credit.ConsumerCredit;
+import io.clab.mpf.shop.consumer.entity.credit.ConsumerCreditDetail;
+import io.clab.mpf.shop.consumer.repository.credit.ConsumerCreditDetailMapper;
+import io.clab.mpf.shop.consumer.repository.credit.ConsumerCreditMapper;
 import io.clab.mpf.shop.consumer.service.IConsumerCreditService;
-import io.clab.mpf.shop.consumer.vto.AddCreditSourceVto;
-import io.clab.mpf.shop.consumer.vto.ConsumerCreditInfoVto;
-import io.clab.mpf.shop.consumer.vto.CreditHisVto;
-import util.PageResult;
+import io.clab.mpf.shop.consumer.vto.credit.AddCreditSourceVto;
+import io.clab.mpf.shop.consumer.vto.credit.ConsumerCreditInfoVto;
+import io.clab.mpf.shop.consumer.vto.credit.CreditHisVto;
+import io.clab.mpf.shop.util.PageResult;
 
 /**
  * @author iceray
@@ -43,6 +43,8 @@ public class ConsumerCreditService implements IConsumerCreditService {
 		credit.setUserId(userId);
 		credit = creditMapper.selectOne(credit);
 		ConsumerCreditInfoVto creditVto = new ConsumerCreditInfoVto();
+		if(credit == null)
+			return creditVto;
 		BeanUtils.copyProperties(credit, creditVto);
 		return creditVto;
 	}
@@ -55,6 +57,7 @@ public class ConsumerCreditService implements IConsumerCreditService {
 		
 		ConsumerCreditDetail detail = new ConsumerCreditDetail();
 		detail.setType(creditHisRangeEnum.getType());
+		detail.setUserId(userId);
 		page.setRecords(creditDetailMapper.getCreditHisList(page,detail));
 		return PageResult.toPage(page,new Page<CreditHisVto>(),creditDetails -> convertToVto(creditDetails));
 	}

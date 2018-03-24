@@ -11,7 +11,9 @@ import io.clab.mpf.shop.business.repository.uuser.UuserMapper;
 import io.clab.mpf.shop.business.service.base.impl.BaseServiceImpl;
 import io.clab.mpf.shop.business.service.uuser.IUuserService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -35,24 +37,42 @@ public class IUuserServiceImpl extends BaseServiceImpl<Uuser> implements IUuserS
 		
 	}
 	
-	public Integer selectAllCount(){
-		return uuserMapper.selectAllCount();
-	}
-
-
-	public ShopConditiontCount selectConditionCount(){
-		return uuserMapper.selectConditionCount();
-	}
-	
 	public Page<ShopNewData> selectShopNewData(int pageNow, int pageSize){
 		Page<ShopNewData> page = new Page<ShopNewData>(pageNow,pageSize == 0?10:pageSize);
 		page.setRecords(uuserMapper.selectShopNewData(page));
 		return page;
 	}
 	
-	public Page<Uuser> selectConditionTwo(int pageNow, int pageSize,DataItem dataItem,Long merchantsId,Integer categoryId,List<Tag> tags,Integer filterHaveUser,Integer filterHaveUserTag){
+	public Integer selectAllCount(){
+		return uuserMapper.selectAllCount();
+	}
+
+
+	public ShopConditiontCount selectConditionCount(DataItem dataItem,Long merchantsId,Integer categoryId,List<Integer> tagIds,Integer filterHaveUser,Integer filterHaveUserTag){
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put("dataItem", dataItem);
+		paramMap.put("merchantsId", merchantsId);
+		paramMap.put("categoryId", categoryId);
+		paramMap.put("tagIds",tagIds );
+		paramMap.put("filterHaveUser", filterHaveUser);
+		paramMap.put("filterHaveUserTag",filterHaveUserTag );
+		return uuserMapper.selectConditionCount(paramMap);
+	}
+	
+
+	
+	public Page<Uuser> selectConditionTwo(int pageNow, int pageSize,DataItem dataItem,Long merchantsId,Integer categoryId,List<Integer> tagIds,Integer filterHaveUser,Integer filterHaveUserTag){
 		Page<Uuser> page = new Page<Uuser>(pageNow,pageSize == 0?10:pageSize);
-		page.setRecords(uuserMapper.selectConditionTwo(page, dataItem, merchantsId, categoryId, tags, filterHaveUser, filterHaveUserTag));
+		
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put("dataItem", dataItem);
+		paramMap.put("merchantsId", merchantsId);
+		paramMap.put("categoryId", categoryId);
+		paramMap.put("tagIds",tagIds );
+		paramMap.put("filterHaveUser", filterHaveUser);
+		paramMap.put("filterHaveUserTag",filterHaveUserTag );
+		
+		page.setRecords(uuserMapper.selectConditionTwo(page,paramMap));
 
 		return page;
 	}

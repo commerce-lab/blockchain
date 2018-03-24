@@ -1,12 +1,15 @@
 package io.clab.mpf.shop.business.controller.login;
 
+import io.clab.mpf.shop.business.entity.admin.Admin;
 import io.clab.mpf.shop.business.entity.merchants.Merchants;
+import io.clab.mpf.shop.business.service.admin.IAdminService;
 import io.clab.mpf.shop.business.service.merchants.IMerchantsService;
-import io.clab.mpf.shop.entity.admin.Admin;
-import io.clab.mpf.shop.entity.module.Module;
-import io.clab.mpf.shop.entity.module.ModuleVo;
-import io.clab.mpf.shop.service.admin.IAdminService;
-import io.clab.mpf.shop.service.module.IModuleService;
+import io.clab.mpf.shop.business.util.RedisUtil;
+import io.clab.mpf.shop.constant.SystemCode;
+import io.clab.mpf.shop.util.Configure;
+import io.clab.mpf.shop.util.JsonResponse;
+import io.clab.mpf.shop.util.SessionUtil;
+import io.clab.mpf.shop.util.encryp.MD5Util;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -16,8 +19,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import javax.annotation.Resource;
@@ -31,15 +32,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import util.Configure;
-import util.JsonResponse;
-import util.RedisUtil;
-import util.SessionUtil;
-import util.Encryp.MD5Util;
-import constant.SystemCode;
-
 /**
- *
  *
  *  商家用户登陆退出
  *
@@ -52,8 +45,8 @@ public class MerchantsLoginController {
 	@Resource
 	private IAdminService adminService;
 	
-	@Resource
-	private IModuleService moduleService;
+	/*@Resource
+	private IModuleService moduleService;*/
 	
 	@Resource
 	private IMerchantsService merchantsService;
@@ -156,9 +149,9 @@ public class MerchantsLoginController {
 		})
 	public JsonResponse<Admin> getAdminInfo(Integer adminId, HttpServletRequest request) {
 		JsonResponse<Admin> result = new JsonResponse<Admin>();
-		Admin admin = adminService.selectByPrimaryKey(adminId);
+		//Admin admin = adminService.selectByPrimaryKey(adminId);
 		result.setRes(SystemCode.SUCCESS);
-		result.setObj(admin);
+		result.setObj(null);
 		return result;
 	}
 	
@@ -168,7 +161,7 @@ public class MerchantsLoginController {
 	 * @param request
 	 * @return
 	 */
-	@ResponseBody
+	/*@ResponseBody
 	@PostMapping("/queryAllValidModule")
 	//@ApiOperation(value = "获取角色菜单", notes = "获取角色菜单")
 	@ApiImplicitParams({ 
@@ -176,12 +169,12 @@ public class MerchantsLoginController {
 		})
 	public JsonResponse<List<ModuleVo>> queryAllValidModule(HttpServletRequest request, Integer roleId) {
 		JsonResponse<List<ModuleVo>> result = new JsonResponse<List<ModuleVo>>();
-		List<Module> modules = moduleService.queryAllValidModule();
+		List<Module> modules = null;//moduleService.queryAllValidModule();
 		List<ModuleVo> moduleVos = new ArrayList<ModuleVo>();
 		ModuleVo moduleVo = null;
 		if (null != modules) {
 			// 查询用户拥有的高级支付方式
-			List<Module> roleModules = moduleService.queryRoleModule(roleId);
+			List<Module> roleModules = new ArrayList<Module>();//moduleService.queryRoleModule(roleId);
 
 			if (null != roleModules) {
 				for (Module module : modules) {
@@ -209,7 +202,7 @@ public class MerchantsLoginController {
 		result.setObj(moduleVos);
 		result.setRes(SystemCode.SUCCESS);
 		return result;
-	}
+	}*/
 	
 
 	//@PostMapping("/createCode")

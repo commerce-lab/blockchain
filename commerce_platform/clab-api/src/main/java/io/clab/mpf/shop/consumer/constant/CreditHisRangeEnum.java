@@ -1,7 +1,7 @@
 package io.clab.mpf.shop.consumer.constant;
 
 public enum CreditHisRangeEnum {
-	ALL(null),ADD(2),REDUCE(1);
+	ALL(0),ADD(2),REDUCE(1);
 	
 	private Integer type;
 	

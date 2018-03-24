@@ -1,13 +1,16 @@
 package io.clab.mpf.shop.common.entity;
 
+import com.baomidou.mybatisplus.annotations.TableName;
+
 import lombok.Data;
 
 /***
- * 短信接收人手机号
+ * 短信接收人信息表
  * 
  * by chenzhenhua
  * ***/
 @Data
+@TableName("t_sms_receiver_mobile")
 public class SmsReceiverMobile {
 	private Long smsBasicInfoId;//关联SmsBasicInfo 的id字段
 	private String mobile;//手机号

@@ -3,7 +3,6 @@
  */
 package io.clab.mpf.shop.util;
 
-import util.MpfSequence;
 
 /**
  * @author iceray

@@ -1,34 +1,33 @@
 package io.clab.mpf.shop.business.controller.merchants;
 
-import java.util.Date;
-import java.util.List;
-
-import io.clab.mpf.shop.entity.admin.Admin;
+import io.clab.mpf.shop.business.entity.admin.Admin;
 import io.clab.mpf.shop.business.entity.merchants.Merchants;
 import io.clab.mpf.shop.business.entity.merchants.MerchantsCategory;
-import io.clab.mpf.shop.service.admin.IAdminService;
-import io.clab.mpf.shop.util.UserIdWroker;
 import io.clab.mpf.shop.business.service.merchants.IMerchantsCategoryService;
 import io.clab.mpf.shop.business.service.merchants.IMerchantsService;
+import io.clab.mpf.shop.business.util.EmailUtil;
+import io.clab.mpf.shop.business.util.RedisUtil;
+import io.clab.mpf.shop.constant.SystemCode;
+import io.clab.mpf.shop.util.Configure;
+import io.clab.mpf.shop.util.JsonResponse;
+import io.clab.mpf.shop.util.UserIdWroker;
+import io.clab.mpf.shop.util.encryp.MD5Util;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
+import java.util.Date;
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import util.Configure;
-import util.EmailUtil;
-import util.JsonResponse;
-import util.RedisUtil;
-import util.Encryp.MD5Util;
-import constant.SystemCode;
 
 
 @Controller
@@ -36,11 +35,10 @@ import constant.SystemCode;
 @Api(value = "商家入驻", description = "商家入驻")
 public class MerchantsController {
 	
-	@Resource
-	private IMerchantsService merchantsService;
+	 private static Logger logger = Logger.getLogger(MerchantsController.class);
 	
 	@Resource
-	private IAdminService adminService;
+	private IMerchantsService merchantsService;
 	
 	@Resource
 	private IMerchantsCategoryService merchantsCategoryService;
@@ -64,7 +62,7 @@ public class MerchantsController {
  			
 			return result;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		
 		// 失败
@@ -109,13 +107,6 @@ public class MerchantsController {
 				return result;
 			}
 			
-			int count = adminService.getCountByAdminName(merchants.getContactEmail());
-			if (count != 0) {
-				result.setRes(SystemCode.FAILURE);
-				result.setResult("对不起，该邮箱已经入驻。");
-				return result;
-			}
-			
 			merchants.setMerchantsId(UserIdWroker.getMerchantsId());
 			Integer i = merchantsService.insertSelectiveEntity(merchants);
 			if(i > 0){
@@ -130,7 +121,7 @@ public class MerchantsController {
 				admin.setCreateTime(now);
 				admin.setUpdateTime(now);
 				
-				adminService.insertSelective(admin);
+				//adminService.insertSelective(admin);
 				return result;
 			}
 		} catch (Exception e) {

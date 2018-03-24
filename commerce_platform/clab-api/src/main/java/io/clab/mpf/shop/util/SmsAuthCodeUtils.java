@@ -1,5 +1,7 @@
 package io.clab.mpf.shop.util;
 
+import org.springframework.stereotype.Component;
+
 /**
  * 短信验证码操作类
  * by chenzhenhua

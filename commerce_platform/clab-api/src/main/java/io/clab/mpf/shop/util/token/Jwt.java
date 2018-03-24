@@ -11,6 +11,8 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
+import io.clab.mpf.shop.consumer.entity.user.User;
+
 public class Jwt {
 
 	/**
@@ -34,14 +36,15 @@ public class Jwt {
 	 * @return token字符串,若失败则返回null
 	 */
 	
-	public static String createToken(Map<String, Object> payload) {
+	public static String createToken(User user,Long expireTime) {
 		
 		// 创建一个 JWS object
 		
-		return JWT.create().withIssuer(ISSUER).withExpiresAt(new Date((long)payload.get("ext")))
+		return JWT.create().withIssuer(ISSUER).withExpiresAt(new Date(expireTime))
 			.withIssuedAt(new Date())
-		     .withClaim("uid", payload.getOrDefault("uid", "").toString())
-		      .withClaim("crt", (long)(payload.getOrDefault("iat", System.currentTimeMillis())))
+		     .withClaim("uid", user.getId().toString())
+		      .withClaim("uphone", user.getMobile().toString())
+		       .withClaim("crt", System.currentTimeMillis())
 		       .sign(ALGORITHM_HS);
 		
 	}
@@ -63,6 +66,7 @@ public class Jwt {
 			// token校验成功（此时没有校验是否过期）
 			resultMap.put("state", TokenState.VALID.toString());
 			resultMap.put("uid", jwt.getClaim("uid").asString());
+			resultMap.put("mobile", jwt.getClaim("uphone").asString());
 			
 		} catch (TokenExpiredException e) {
 			resultMap.clear();

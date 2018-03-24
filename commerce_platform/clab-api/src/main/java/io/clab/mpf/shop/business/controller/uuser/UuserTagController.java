@@ -17,17 +17,24 @@ import io.clab.mpf.shop.business.service.uuser.IDiTagService;
 import io.clab.mpf.shop.business.service.uuser.IDiUuserService;
 import io.clab.mpf.shop.business.service.uuser.ITagService;
 import io.clab.mpf.shop.business.service.uuser.IUuserService;
+import io.clab.mpf.shop.business.util.RedisUtil;
+import io.clab.mpf.shop.common.repository.MyBatisSql;
+import io.clab.mpf.shop.constant.SystemCode;
+import io.clab.mpf.shop.util.Configure;
+import io.clab.mpf.shop.util.JsonResponse;
+import io.clab.mpf.shop.util.SessionUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
 import java.io.InputStream;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -41,18 +48,13 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import com.baomidou.mybatisplus.plugins.Page;
-
-import util.Configure;
-import util.JsonResponse;
-import util.RedisUtil;
-import util.SessionUtil;
-import constant.SystemCode;
 
 
 @Controller
@@ -74,6 +76,9 @@ public class UuserTagController {
 	
 	@Resource
 	private IDiTagService diTagService;
+	
+	@Resource
+	private io.clab.mpf.shop.common.service.IMyBatisSqlService myBatisSqlService;
 
 	@ResponseBody
 	@PostMapping("/uploadUserTagExcel")
@@ -120,9 +125,9 @@ public class UuserTagController {
                     Integer rightNum = 0;
                     Integer errorNum = 0;
                     
-                    // 循环工作表Sheet
-                    for (int numSheet = 0; numSheet <hssfWorkbook.getNumberOfSheets(); numSheet++) {
-                        Sheet hssfSheet = hssfWorkbook.getSheetAt(numSheet);
+                    // 不循环工作表Sheet
+                    if (hssfWorkbook.getNumberOfSheets() > 0) {
+                        Sheet hssfSheet = hssfWorkbook.getSheetAt(0);
                         if (hssfSheet == null) {
                             continue;
                         }
@@ -243,7 +248,7 @@ public class UuserTagController {
                     
                     dataItem.setRightNum(rightNum);
                     dataItem.setErrorNum(errorNum);
-                    dataItemService.updateByPrimaryKey(dataItem);
+                    dataItemService.updateByPrimaryKeySelective(dataItem);
                     
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -276,6 +281,7 @@ public class UuserTagController {
 		String errorNum = RedisUtil.getInstance().strings().get(Configure.upload_progress+"_ERRORNUM"+randomCode);
 		UploadUserTagExcelState uutes = new UploadUserTagExcelState();
 		if(percent != null && rightNum != null && errorNum != null && !"".equals(percent) && !"".equals(rightNum) && !"".equals(errorNum)){
+			System.out.println("percent-->>"+percent);
 			uutes.setPercent(Float.parseFloat(percent));
 			uutes.setRightNum(Integer.valueOf(rightNum));
 			uutes.setErrorNum(Integer.valueOf(errorNum));
@@ -293,9 +299,13 @@ public class UuserTagController {
 	@ApiOperation("商家资产统计")
 	private JsonResponse<AssetsCount> assetsCount(HttpServletRequest request) {
 		JsonResponse<AssetsCount> result = new JsonResponse<AssetsCount>();
-		
-		Long merchantsId = 1l;
-		AssetsCount data = dataItemService.selectAssetsStatisticalByMerchantsId(merchantsId);
+		Merchants merchants = SessionUtil.getMerchantsUser(request);
+		if(merchants == null || merchants.getMerchantsId() <= 0){
+			result.setRes(SystemCode.NO_LOGIN);
+		    result.setResult(SystemCode.GetErrorDesc(SystemCode.NO_LOGIN));  
+		    return result;
+		}
+		AssetsCount data = dataItemService.selectAssetsStatisticalByMerchantsId(merchants.getMerchantsId());
 		result.setObj(data);
 		result.setRes(SystemCode.SUCCESS);
 	    result.setResult(SystemCode.GetErrorDesc(SystemCode.SUCCESS));  
@@ -312,10 +322,14 @@ public class UuserTagController {
 		})
 	private JsonResponse<Page<DataItem>> assetsList(HttpServletRequest request,Integer pageNow,Integer pageSize) {
 		JsonResponse<Page<DataItem>> result = new JsonResponse<Page<DataItem>>();
-		
-		Long merchantsId = 1l;
-		
-		Page<DataItem> page = dataItemService.selectByMerchantsIdList(pageNow, pageSize, merchantsId);
+		Merchants merchants = SessionUtil.getMerchantsUser(request);
+		if(merchants == null || merchants.getMerchantsId() <= 0){
+			result.setRes(SystemCode.NO_LOGIN);
+		    result.setResult(SystemCode.GetErrorDesc(SystemCode.NO_LOGIN));  
+		    return result;
+		}
+
+		Page<DataItem> page = dataItemService.selectByMerchantsIdList(pageNow, pageSize, merchants.getMerchantsId());
 		result.setObj(page);
 		result.setRes(SystemCode.SUCCESS);
 	    result.setResult(SystemCode.GetErrorDesc(SystemCode.SUCCESS));  
@@ -373,18 +387,6 @@ public class UuserTagController {
 	}
 	
 	@ResponseBody
-	@PostMapping("/selectConditionCount")
-	@ApiOperation("筛选用户统计")
-	public JsonResponse<ShopConditiontCount> selectConditionCount(){
-		JsonResponse<ShopConditiontCount> result = new JsonResponse<ShopConditiontCount>();
-		ShopConditiontCount shopConditiontCount = uuserService.selectConditionCount();
-		result.setObj(shopConditiontCount);
-		result.setRes(SystemCode.SUCCESS);
-	    result.setResult(SystemCode.GetErrorDesc(SystemCode.SUCCESS));  
-	    return result;
-	}
-	
-	@ResponseBody
 	@PostMapping("/selectShopNewData")
 	@ApiOperation("获取最新上传数据信息")
 	@ApiImplicitParams({ 
@@ -401,19 +403,39 @@ public class UuserTagController {
 	}
 	
 	@ResponseBody
+	@PostMapping("/selectConditionCount")
+	@ApiOperation("筛选用户统计")
+	@ApiImplicitParams({ 
+		@ApiImplicitParam(name = "categoryId", value = "类目ID",paramType="query"),
+		@ApiImplicitParam(name = "tagIds", value = "标签ID集",paramType="query"),
+		@ApiImplicitParam(name = "filterHaveUser", value = "过滤已有用户",paramType="query"),
+		@ApiImplicitParam(name = "filterHaveUserTag", value = "过滤已有标签",paramType="query"),
+		})
+	public JsonResponse<ShopConditiontCount> selectConditionCount(HttpServletRequest request,DataItem dataItem,Integer categoryId,@RequestParam(value="tagIds", required=false) List<Integer> tagIds,Integer filterHaveUser,Integer filterHaveUserTag){
+		JsonResponse<ShopConditiontCount> result = new JsonResponse<ShopConditiontCount>();
+		ShopConditiontCount shopConditiontCount = uuserService.selectConditionCount( dataItem, null, categoryId, tagIds, filterHaveUser, filterHaveUserTag);
+		result.setObj(shopConditiontCount);
+		result.setRes(SystemCode.SUCCESS);
+	    result.setResult(SystemCode.GetErrorDesc(SystemCode.SUCCESS));  
+	    return result;
+	}
+	
+	
+	
+	@ResponseBody
 	@PostMapping("/selectConditionTwo")
 	@ApiOperation("筛选用户随机获取用户信息")
 	@ApiImplicitParams({ 
 		@ApiImplicitParam(name = "pageNow", value = "查询第几页", required = true,paramType="query"),
 		@ApiImplicitParam(name = "pageSize", value = "返回条数", required = true,paramType="query"),
 		@ApiImplicitParam(name = "categoryId", value = "类目ID",paramType="query"),
-		@ApiImplicitParam(name = "tags", value = "标签集",paramType="query"),
+		@ApiImplicitParam(name = "tagIds", value = "标签ID集",paramType="query"),
 		@ApiImplicitParam(name = "filterHaveUser", value = "过滤已有用户",paramType="query"),
 		@ApiImplicitParam(name = "filterHaveUserTag", value = "过滤已有标签",paramType="query"),
 		})
-	public JsonResponse<Page<Uuser>> selectConditionTwo(HttpServletRequest request,int pageNow, int pageSize,DataItem dataItem,Integer categoryId,List<Tag> tags,Integer filterHaveUser,Integer filterHaveUserTag){
+	public JsonResponse<Page<Uuser>> selectConditionTwo(HttpServletRequest request,int pageNow, int pageSize,DataItem dataItem,Integer categoryId,@RequestParam(value="tagIds", required=false) List<Integer> tagIds,Integer filterHaveUser,Integer filterHaveUserTag){
 		JsonResponse<Page<Uuser>> result = new JsonResponse<Page<Uuser>>();
-		Page<Uuser> page = uuserService.selectConditionTwo(pageNow, pageSize, dataItem, 1L, categoryId, tags, filterHaveUser, filterHaveUserTag);
+		Page<Uuser> page = uuserService.selectConditionTwo(pageNow, pageSize, dataItem, null, categoryId, tagIds, filterHaveUser, filterHaveUserTag);
 		result.setObj(page);
 		result.setRes(SystemCode.SUCCESS);
 	    result.setResult(SystemCode.GetErrorDesc(SystemCode.SUCCESS));  
@@ -429,12 +451,25 @@ public class UuserTagController {
 		@ApiImplicitParam(name = "pageNow", value = "查询第几页", required = true,paramType="query"),
 		@ApiImplicitParam(name = "pageSize", value = "返回条数", required = true,paramType="query"),
 		})
-	public JsonResponse<Page<Uuser>> selectUserAssetsList(int pageNow, int pageSize,UserAssetsParameter userAssetsParameter){
+	public JsonResponse<Page<Uuser>> selectUserAssetsList(HttpServletRequest request,int pageNow, int pageSize,UserAssetsParameter userAssetsParameter){
 		JsonResponse<Page<Uuser>> result = new JsonResponse<Page<Uuser>>();
+		Merchants merchants = SessionUtil.getMerchantsUser(request);
+		if(merchants == null || merchants.getMerchantsId() <= 0){
+			result.setRes(SystemCode.NO_LOGIN);
+		    result.setResult(SystemCode.GetErrorDesc(SystemCode.NO_LOGIN));  
+		    return result;
+		}
+		
 		Page<Uuser> page = uuserService.selectUserAssetsList(pageNow, pageSize, userAssetsParameter);
 		result.setObj(page);
 		result.setRes(SystemCode.SUCCESS);
-	    result.setResult(SystemCode.GetErrorDesc(SystemCode.SUCCESS));  
+	    result.setResult(SystemCode.GetErrorDesc(SystemCode.SUCCESS));
+	    
+	    /*Map<String, Object> paramMap = new HashMap<String, Object>();
+	    paramMap.put("sex", 1);
+	    MyBatisSql myBatisSql = myBatisSqlService.getSqlById("io.clab.mpf.shop.business.repository.uuser.UuserMapper.selectUserAssetsList", paramMap);
+*/
+	    
 	    return result;
 	}
 
@@ -498,11 +533,14 @@ public class UuserTagController {
 	    		}
 			}
 			//上传进度到redis
-			float ff = (float)rowNum / maxNum;
-			DecimalFormat df = new DecimalFormat("0.00");//格式化小数 
-			String s = df.format(ff);//返回的是String类型 
+			Integer ff = (rowNum / maxNum) * 100;
+			//DecimalFormat df = new DecimalFormat("0.00");//格式化小数 
+			//String s = df.format(ff);//返回的是String类型 
+			
+			System.out.println("ssss--->>"+ff);
+			
 			//存redis
-			RedisUtil.getInstance().strings().setEx(Configure.upload_progress+"_RANDOMCODE"+randomCode, 3 * 60 * 60, s);
+			RedisUtil.getInstance().strings().setEx(Configure.upload_progress+"_RANDOMCODE"+randomCode, 3 * 60 * 60, ff+"");
 			RedisUtil.getInstance().strings().setEx(Configure.upload_progress+"_RIGHTNUM"+randomCode, 3 * 60 * 60, rightNum+"");
 			RedisUtil.getInstance().strings().setEx(Configure.upload_progress+"_ERRORNUM"+randomCode, 3 * 60 * 60, errorNum+"");
 				

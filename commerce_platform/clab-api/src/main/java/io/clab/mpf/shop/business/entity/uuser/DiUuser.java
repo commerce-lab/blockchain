@@ -1,6 +1,9 @@
 package io.clab.mpf.shop.business.entity.uuser;
 
 import java.io.Serializable;
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -28,6 +31,10 @@ public class DiUuser implements Serializable{
 	
 	@ApiModelProperty("支付状态（0：未支付，1：已支付）")
 	private Integer payState;
+	
+	@ApiModelProperty("创建时间")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+	private Date createTime;
 
 	public Long getDiUuserId() {
 		return diUuserId;
@@ -86,6 +93,13 @@ public class DiUuser implements Serializable{
 	public void setPayState(Integer payState) {
 		this.payState = payState;
 	}
-	
+
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
 
 }

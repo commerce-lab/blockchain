@@ -4,12 +4,11 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import util.PageResult;
-
 import com.github.pagehelper.PageHelper;
 
 import io.clab.mpf.shop.business.repository.base.IBusBaseMapper;
 import io.clab.mpf.shop.business.service.base.IBaseService;
+import io.clab.mpf.shop.util.PageResult;
 
 
 /**

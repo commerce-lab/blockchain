@@ -17,6 +17,9 @@ public class Merchants implements Serializable{
 	@ApiModelProperty("商家名称")
 	private String merchantsName;
 	
+	@ApiModelProperty("商家账号")
+	private String merchantsAccount;
+	
 	@ApiModelProperty("商家类型（1：品牌商，2：广告商，3：零售商）")
 	private Integer merchantsType;
 	
@@ -55,6 +58,21 @@ public class Merchants implements Serializable{
 	
 	@ApiModelProperty("简介")
 	private String description;
+	
+	@ApiModelProperty("商家登记注册号")
+	private String registrNo;
+	
+	@ApiModelProperty("营业执照")
+	private String businessLicense;
+	
+	@ApiModelProperty("身份证正面")
+	private String idCardFront;
+	
+	@ApiModelProperty("身份证反面")
+	private String idCardBack;
+	
+	@ApiModelProperty("商家logo地址")
+	private String logoUrl;
 	
 	@ApiModelProperty("审核状态（0：审核中，1：审核通过，2：审核不通过）")
 	private Integer state = 0;
@@ -199,6 +217,56 @@ public class Merchants implements Serializable{
 
 	public void setRand(String rand) {
 		this.rand = rand;
+	}
+
+	public String getMerchantsAccount() {
+		return merchantsAccount;
+	}
+
+	public void setMerchantsAccount(String merchantsAccount) {
+		this.merchantsAccount = merchantsAccount;
+	}
+
+	public String getLogoUrl() {
+		return logoUrl;
+	}
+
+	public void setLogoUrl(String logoUrl) {
+		this.logoUrl = logoUrl;
+	}
+
+
+
+	public String getRegistrNo() {
+		return registrNo;
+	}
+
+	public void setRegistrNo(String registrNo) {
+		this.registrNo = registrNo;
+	}
+
+	public String getBusinessLicense() {
+		return businessLicense;
+	}
+
+	public void setBusinessLicense(String businessLicense) {
+		this.businessLicense = businessLicense;
+	}
+
+	public String getIdCardFront() {
+		return idCardFront;
+	}
+
+	public void setIdCardFront(String idCardFront) {
+		this.idCardFront = idCardFront;
+	}
+
+	public String getIdCardBack() {
+		return idCardBack;
+	}
+
+	public void setIdCardBack(String idCardBack) {
+		this.idCardBack = idCardBack;
 	}
 
 

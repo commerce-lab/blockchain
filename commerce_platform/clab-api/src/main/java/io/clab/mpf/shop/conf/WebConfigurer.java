@@ -1,9 +1,10 @@
 package io.clab.mpf.shop.conf;
 
+import io.clab.mpf.shop.consumer.interceptor.QqWebInterceptor;
+
 import java.util.concurrent.ThreadPoolExecutor;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -14,17 +15,19 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @Configuration
 public class WebConfigurer extends WebMvcConfigurerAdapter {
 
-    private final Logger log = LoggerFactory.getLogger(WebConfigurer.class);
+    //private final Logger log = LoggerFactory.getLogger(WebConfigurer.class);
 
+    @Autowired
+    private QqWebInterceptor webInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         //registry.addInterceptor(new QqInterceptor())
         //        .addPathPatterns("/admin/*/**");
-        //registry.addInterceptor(new QqWebInterceptor())
-        //        .addPathPatterns("/front/*/**").
-        //        excludePathPatterns("/front/user/user/checkCode").
-        //        excludePathPatterns("/front/user/user/sendCode");
+        registry.addInterceptor(webInterceptor)
+                .addPathPatterns("/c/*/**")
+                .excludePathPatterns("/c/user/**");
+                //excludePathPatterns("/front/user/user/sendCode");
 
         super.addInterceptors(registry);
     }

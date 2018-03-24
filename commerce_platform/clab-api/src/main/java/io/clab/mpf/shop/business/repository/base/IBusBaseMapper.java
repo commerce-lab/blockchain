@@ -1,10 +1,10 @@
 package io.clab.mpf.shop.business.repository.base;
 
+import io.clab.mpf.shop.util.PageResult;
+
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
-
-import util.PageResult;
 
 
 

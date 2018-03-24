@@ -3,9 +3,9 @@ package io.clab.mpf.shop.consumer.service;
 import com.baomidou.mybatisplus.plugins.Page;
 
 import io.clab.mpf.shop.consumer.constant.CreditHisRangeEnum;
-import io.clab.mpf.shop.consumer.vto.AddCreditSourceVto;
-import io.clab.mpf.shop.consumer.vto.ConsumerCreditInfoVto;
-import io.clab.mpf.shop.consumer.vto.CreditHisVto;
+import io.clab.mpf.shop.consumer.vto.credit.AddCreditSourceVto;
+import io.clab.mpf.shop.consumer.vto.credit.ConsumerCreditInfoVto;
+import io.clab.mpf.shop.consumer.vto.credit.CreditHisVto;
 
 /**
  * 消费者积分相关操作

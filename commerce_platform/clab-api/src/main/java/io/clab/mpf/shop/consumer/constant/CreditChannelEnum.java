@@ -21,4 +21,14 @@ public enum CreditChannelEnum {
 	public String getName() {
 		return this.value;
 	}
+	
+	public static CreditChannelEnum getValueBySource(Integer source) {
+		if(source == 1)
+			return SHOP_DATA_GRANT;
+		if(source == 2)
+			return SHOP_PRESENTED;
+		if(source == 3)
+			return RETURN;
+	    return DAILYTASK;
+	}
 }

@@ -1,11 +1,14 @@
 package io.clab.mpf.shop.common.entity;
 
+import com.baomidou.mybatisplus.annotations.TableName;
+
 import lombok.Data;
 /***
- * 消息发送基本信息表
+ * 短信发送基本信息表
  *  * by chenzhenhua
  * **/
 @Data
+@TableName("t_sms_basic_info")
 public class SmsBasicInfo {
 	private Long id;
 	private Long senderId;//发件人
